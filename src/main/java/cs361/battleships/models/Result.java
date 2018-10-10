@@ -1,31 +1,41 @@
 package cs361.battleships.models;
 
-public class Result {
+import java.util.List;
 
-	public AtackStatus getResult() {
-		//TODO implement
-		return null;
+public class Result
+{
+	private List<Ship> ships;
+	private Ship ship;
+	private Square square;
+	private AttackStatus attackStatus;
+
+	public AttackStatus getResult()
+	{
+		return this.attackStatus;
 	}
-
-	public void setResult(AtackStatus result) {
-		//TODO implement
+	public Result(AttackStatus result, Ship ship, Square square)
+	{
+		this.ship = ship;
+		this.square = square;
+		this.attackStatus = result;
+	}
+	public void setResult(AttackStatus result) {
+		this.attackStatus = result;
 	}
 
 	public Ship getShip() {
-		//TODO implement
-		return null;
+		return this.ship;
 	}
 
 	public void setShip(Ship ship) {
-		//TODO implement
+		this.ship = ship;
 	}
 
 	public Square getLocation() {
-		//TODO implement
-		return null;
+		return this.square;
 	}
 
 	public void setLocation(Square square) {
-		//TODO implement
+		this.square = square;
 	}
 }
