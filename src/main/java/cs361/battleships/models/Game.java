@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import static cs361.battleships.models.AtackStatus.*;
+import static cs361.battleships.models.AttackStatus.*;
 
 public class Game {
 
@@ -50,17 +51,20 @@ public class Game {
     }
 
     private char randCol() {
-        // TODO implement
-        return 'X';
+        Random r = new Random();
+        char c = (char)(r.nextInt(10) + 'a');
+        return c;
     }
 
     private int randRow() {
-        // TODO implement
-        return 0;
+        Random rand = new Random();
+        int  n = rand.nextInt(10) + 1;
+        return n;
     }
 
     private boolean randVertical() {
-        // TODO implement
-        return false;
+        Random rand2 = new Random();
+        return rand2.nextBoolean();
     }
 }
+

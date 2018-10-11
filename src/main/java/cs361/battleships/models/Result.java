@@ -1,27 +1,31 @@
 package cs361.battleships.models;
 
-public class Result {
+import java.util.List;
 
-	private AtackStatus result;
+
+public class Result
+{
+	private List<Ship> ships;
 	private Ship ship;
-	private Square location;
+	private Square square;
+	private AttackStatus attackStatus;
 
-	public Result(AtackStatus result, Ship ship, Square location) {
-		this.result = result;
+	public AttackStatus getResult()
+	{
+		return this.attackStatus;
+	}
+	public Result(AttackStatus result, Ship ship, Square square)
+	{
 		this.ship = ship;
-		this.location = location;
+		this.square = square;
+		this.attackStatus = result;
 	}
-
-	public AtackStatus getResult() {
-		return result;
-	}
-
-	public void setResult(AtackStatus result) {
-		this.result = result;
+	public void setResult(AttackStatus result) {
+		this.attackStatus = result;
 	}
 
 	public Ship getShip() {
-		return ship;
+		return this.ship;
 	}
 
 	public void setShip(Ship ship) {
@@ -29,10 +33,10 @@ public class Result {
 	}
 
 	public Square getLocation() {
-		return location;
+		return this.square;
 	}
 
 	public void setLocation(Square square) {
-		this.location = square;
+		this.square = square;
 	}
 }
