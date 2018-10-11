@@ -2,6 +2,7 @@ package cs361.battleships.models;
 
 import java.util.List;
 
+
 public class Result
 {
 	private List<Ship> ships;

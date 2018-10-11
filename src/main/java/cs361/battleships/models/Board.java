@@ -5,27 +5,22 @@ import java.util.List;
 
 public class Board {
 
-	//variable to hold the current ships on the board, cannot be more than 3
-	private List<Ship> ships;
-	private List<Result> attacks;
-	//private List<Result> boardResults;
+	private List<Result> attacks; // list of squares on this board that have been attacked
+	private List<Ship> ships; // list of ships on this board (cannot be more than 3)
+
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Board() {
-		// TODO Implement
 		attacks = new ArrayList<Result>();
 		ships = new ArrayList<Ship>();
-		//initialize ships to be 0
-
 	}
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		// TODO Implement
-		y = Character.toLowerCase(y);
+		y = Character.toUpperCase(y);
 		//check if there less than three ships
 		if(ships.size() == 3)
 		{
@@ -38,7 +33,7 @@ public class Board {
 		}
 
 		//perform bounds check to see if y is between A-J
-		if(y < 'a' || y > 'j'){
+		if(y < 'A' || y > 'J'){
 			return false;
 		}
 
@@ -65,7 +60,7 @@ public class Board {
 					{
 						for(int i = 0; i < shipLength; i++)
 						{
-							if(Character.toLowerCase(s1.getColumn()) == (char)(y+i) && s1.getRow() == x){
+							if(Character.toUpperCase(s1.getColumn()) == (char)(y+i) && s1.getRow() == x){
 								return false;
 							}
 						}
@@ -93,7 +88,7 @@ public class Board {
 					{
 						for(int i = 0; i < shipLength; i++)
 						{
-							if(Character.toLowerCase(s1.getColumn()) == y && s1.getRow() == x+i){
+							if(Character.toUpperCase(s1.getColumn()) == y && s1.getRow() == x+i){
 								return false;
 							}
 						}
@@ -140,8 +135,60 @@ public class Board {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Result attack(int x, char y) {
-		//TODO Implement
-		return null;
+		// first check to see if this attack is in bounds
+		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
+			return new Result(AttackStatus.INVALID, null, new Square(x, y));
+		}
+		// then check the attacks already made; no duplicate attacks allowed
+		for (Result r : attacks) {
+			// if this attack is targeted at a square already attacked it is invalid
+			if (r.getLocation().getRow() == x && r.getLocation().getColumn() == y) {
+				return new Result(AttackStatus.INVALID, null, new Square(x, y));
+			}
+		}
+		// next check to see if the attack hits a ship. Initialize tools to help us later
+		Result thisResult;
+		Ship shipHit = null;
+		// now for each ship
+		for (Ship ship : ships) {
+			// look at the squares in that ship
+			for (Square square : ship.getOccupiedSquares()) {
+				// if this attack targets one of those squares it is a hit
+				if (square.getRow() == x && square.getColumn() == y) {
+					shipHit = ship;
+					ship.incNumHits();
+					break;
+				}
+			}
+		}
+		// if this was a hit
+		if (shipHit != null) {
+			// check if the game is over
+			boolean surrender = true;
+			for (Ship ship : ships) {
+				if (ship.getNumHits() < ship.getLength()) {
+					surrender = false;
+				}
+			}
+			if (surrender) {
+				thisResult = new Result(AttackStatus.SURRENDER, null, new Square(x, y));
+			}
+			// check for sunk
+			else if (shipHit.getNumHits() == shipHit.getLength()) {
+				thisResult =  new Result(AttackStatus.SUNK, shipHit, new Square(x, y));
+			}
+			// if the code is still running than it is only a hit
+			else {
+				thisResult = new Result(AttackStatus.HIT, shipHit, new Square(x, y));
+			}
+		}
+		// no ship was hit
+		else {
+			thisResult = new Result(AttackStatus.MISS, null, new Square(x, y));
+		}
+		// now that the result is complete, add it to the previous attacks and return it
+		attacks.add(thisResult);
+		return thisResult;
 	}
 
 	public List<Ship> getShips() {
@@ -166,11 +213,10 @@ public class Board {
 	}
 
 	public List<Result> getAttacks() {
-		//TODO implement
-		return null;
+		return attacks;
 	}
 
 	public void setAttacks(List<Result> attacks) {
-		//TODO implement
+		this.attacks = attacks;
 	}
 }
