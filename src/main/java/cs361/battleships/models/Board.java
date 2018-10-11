@@ -20,8 +20,7 @@ public class Board {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		// TODO Implement
-		y = Character.toLowerCase(y);
+		y = Character.toUpperCase(y);
 		//check if there less than three ships
 		if(ships.size() == 3)
 		{
@@ -34,7 +33,7 @@ public class Board {
 		}
 
 		//perform bounds check to see if y is between A-J
-		if(y < 'a' || y > 'j'){
+		if(y < 'A' || y > 'J'){
 			return false;
 		}
 
@@ -61,7 +60,7 @@ public class Board {
 					{
 						for(int i = 0; i < shipLength; i++)
 						{
-							if(Character.toLowerCase(s1.getColumn()) == (char)(y+i) && s1.getRow() == x){
+							if(Character.toUpperCase(s1.getColumn()) == (char)(y+i) && s1.getRow() == x){
 								return false;
 							}
 						}
@@ -89,7 +88,7 @@ public class Board {
 					{
 						for(int i = 0; i < shipLength; i++)
 						{
-							if(Character.toLowerCase(s1.getColumn()) == y && s1.getRow() == x+i){
+							if(Character.toUpperCase(s1.getColumn()) == y && s1.getRow() == x+i){
 								return false;
 							}
 						}
@@ -147,8 +146,8 @@ public class Board {
 				return new Result(AttackStatus.INVALID, null, new Square(x, y));
 			}
 		}
-		// the function is still running, so the attack is valid
-		// next check to see if the attack hits a ship. Initialize a tool to help us later
+		// next check to see if the attack hits a ship. Initialize tools to help us later
+		Result thisResult;
 		Ship shipHit = null;
 		// now for each ship
 		for (Ship ship : ships) {
@@ -172,17 +171,24 @@ public class Board {
 				}
 			}
 			if (surrender) {
-				return new Result(AttackStatus.SURRENDER, null, new Square(x, y));
+				thisResult = new Result(AttackStatus.SURRENDER, null, new Square(x, y));
 			}
 			// check for sunk
-			if (shipHit.getNumHits() == shipHit.getLength()) {
-				return new Result(AttackStatus.SUNK, shipHit, new Square(x, y));
+			else if (shipHit.getNumHits() == shipHit.getLength()) {
+				thisResult =  new Result(AttackStatus.SUNK, shipHit, new Square(x, y));
 			}
 			// if the code is still running than it is only a hit
-			return new Result(AttackStatus.HIT, shipHit, new Square(x, y));
+			else {
+				thisResult = new Result(AttackStatus.HIT, shipHit, new Square(x, y));
+			}
 		}
 		// no ship was hit
-		return new Result(AttackStatus.MISS, null, new Square(x, y));
+		else {
+			thisResult = new Result(AttackStatus.MISS, null, new Square(x, y));
+		}
+		// now that the result is complete, add it to the previous attacks and return it
+		attacks.add(thisResult);
+		return thisResult;
 	}
 
 	public List<Ship> getShips() {

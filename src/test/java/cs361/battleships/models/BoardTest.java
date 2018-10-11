@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 public class BoardTest {
 
@@ -35,29 +36,41 @@ public class BoardTest {
     }
 
     @Test
-    public void testInvalidAttack () {
+    public void testDuplicateAttack () {
         // set up a board with an attack already on it
         Board board = new Board();
         board.attack(8, 'C');
         // attack the square already attacked
-        assertTrue(board.attack(8, 'C').getResult() == AttackStatus.INVALID);
+        assertSame(board.attack(8, 'C').getResult(), AttackStatus.INVALID);
+    }
+
+    @Test
+    public void testOutOfBoundsAttack() {
+        Board board = new Board();
         // attack out of bounds
-        assertTrue(board.attack(11, 'C').getResult() == AttackStatus.INVALID);
-        assertTrue(board.attack(8, 'K').getResult() == AttackStatus.INVALID);
+        assertSame(board.attack(11, 'C').getResult(), AttackStatus.INVALID);
+        assertSame(board.attack(8, 'K').getResult(), AttackStatus.INVALID);
     }
 
     @Test
     public void testMissedAttack () {
         Board board = new Board();
-        assertTrue(board.attack(8, 'C').getResult() == AttackStatus.MISS);
+        assertSame(board.attack(8, 'C').getResult(), AttackStatus.MISS);
+    }
+
+    @Test
+    public void testGetAttacks () {
+        Board board = new Board();
+        board.attack(8, 'C');
+        assertTrue(board.getAttacks().get(0).getLocation().getRow() == 8 && board.getAttacks().get(0).getLocation().getColumn() == 'C');
     }
 
     @Test
     public void testHit (){
         Board board = new Board();
         board.placeShip(new Ship("MINESWEEPER"), 8, 'C', false);
-        assertTrue(board.attack(8, 'C').getResult() == AttackStatus.HIT);
-    }
+        assertSame(board.attack(8, 'C').getResult(), AttackStatus.HIT);
+}
 
     @Test
     public void testSunk() {
@@ -65,7 +78,7 @@ public class BoardTest {
         board.placeShip(new Ship("MINESWEEPER"), 8, 'C', false);
         board.placeShip(new Ship("BATTLESHIP"), 2, 'C', false);
         board.attack(8, 'C');
-        assertTrue(board.attack(8, 'D').getResult() == AttackStatus.SUNK);
+        assertSame(board.attack(8, 'D').getResult(), AttackStatus.SUNK);
     }
 
     @Test
@@ -73,6 +86,6 @@ public class BoardTest {
         Board board = new Board();
         board.placeShip(new Ship("MINESWEEPER"), 8, 'C', false);
         board.attack(8, 'C');
-        assertTrue(board.attack(8, 'D').getResult() == AttackStatus.SURRENDER);
+        assertSame(board.attack(8, 'D').getResult(), AttackStatus.SURRENDER);
     }
 }
