@@ -151,8 +151,17 @@ public class Board {
 	public void setShips(List<Ship> ships) {
 
 		if(ships.size() <= 3) {
-			this.ships = ships;
+			for (int i = 0; i < ships.size() - 1; i++) {
+				for (int j = i + 1; j < ships.size(); j++) {
+					if (ships.get(i).getLength() == ships.get(j).getLength()) {
+						return;
+					}
+				}
+			}
 		}
+
+		this.ships = ships;
+		
 		//function to setShip variable
 	}
 
