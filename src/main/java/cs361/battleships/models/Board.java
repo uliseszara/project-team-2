@@ -55,9 +55,9 @@ public class Board {
 			if(shipLength <= 4){
 				//identify right bound of ship
 				char rightBound = (char)(y+shipLength-1);
-				rightBound = Character.toLowerCase(rightBound);
+				rightBound = Character.toUpperCase(rightBound);
 				//check if right bound is on board
-				if(rightBound > 'j'){
+				if(rightBound > 'J'){
 					//if not, do not place ship
 					return false;
 				}
@@ -135,7 +135,7 @@ public class Board {
 
 		if(!isVertical){
 			for(int i=0; i<shipLength; i++){
-				Square s1 = new Square(x, (char)(y+i));
+				Square s1 = new Square(x, Character.toUpperCase((char)(y+i)));
 				shipList.add(s1);
 			}
 		}
