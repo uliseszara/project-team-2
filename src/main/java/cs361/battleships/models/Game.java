@@ -52,7 +52,7 @@ public class Game {
 
     private char randCol() {
         Random r = new Random();
-        char c = (char)(r.nextInt(10) + 'a');
+        char c = (char)(r.nextInt(10) + 'A');
         return c;
     }
 
