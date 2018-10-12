@@ -1,15 +1,30 @@
 package cs361.battleships.models;
 
 import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
 
+
 public class BoardTest {
 
     @Test
-    public void testInvalidPlacement() {
+    public void testInvalidPlacementOffBoard() {
+        Board board = new Board();
+        assertFalse(board.placeShip(new Ship("MINESWEEPER"), 11, 'J', false));
+    }
+
+    @Test
+    public void testInvalidPlacementOffBottom() {
+        Board board = new Board();
+        assertFalse(board.placeShip(new Ship("MINESWEEPER"), 10, 'J', true));
+    }
+
+    @Test
+    public void testInvalidPlacementOffSide() {
         Board board = new Board();
         assertFalse(board.placeShip(new Ship("MINESWEEPER"), 10, 'J', false));
     }
@@ -21,14 +36,26 @@ public class BoardTest {
     }
 
     @Test
-    public void testInvalidPlacement2() {
+    public void testSetGetShips() {
+        Board board = new Board();
+        List<Ship> ships = new ArrayList<Ship>();
+        Ship s1 = new Ship("m");
+        Ship s2 = new Ship("d");
+        ships.add(s1);
+        ships.add(s2);
+        board.setShips(ships);
+        assertSame(ships, board.getShips());
+    }
+
+    @Test
+    public void testInvalidPlacementShipOverShip() {
         Board board = new Board();
         board.placeShip(new Ship("m"),1,'A',true);
         board.placeShip(new Ship("d"),1,'B',true);
         assertFalse(board.placeShip(new Ship("BATTLESHIP"), 3, 'A', false));
     }
     @Test
-    public void testInvalidPlacement3() {
+    public void testInvalidPlacementMultipleShipType() {
         Board board = new Board();
         board.placeShip(new Ship("m"),1,'A',true);
         board.placeShip(new Ship("d"),1,'B',true);
