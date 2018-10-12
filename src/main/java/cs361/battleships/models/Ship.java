@@ -3,6 +3,7 @@ package cs361.battleships.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import static java.lang.System.exit;
 
@@ -23,7 +24,9 @@ public class Ship {
 
 	public void incNumHits(){ this.numHits++; }
 
-	
+	public Ship() {
+		occupiedSquares = new ArrayList<>();
+	}
 	public Ship(String k) {
 		k = k.toLowerCase();
 
@@ -36,7 +39,8 @@ public class Ship {
         else if((k.equals("battleship"))|| (k.equals("b"))){ this.length = 4; }
         else{
             System.out.print("Invalid ship argument");
-            exit(0);
+            this.kind = "";
+			this.length = 0;
         }
 
 	}

@@ -10,6 +10,7 @@ public class Square {
 		this.row = row;
 		this.column = column;
 	}
+	public Square(){}
 
 	public char getColumn() {
 		return column;
