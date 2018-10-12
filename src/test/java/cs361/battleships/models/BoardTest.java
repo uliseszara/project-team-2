@@ -82,6 +82,7 @@ public class BoardTest {
     @Test
     public void testMissedAttack () {
         Board board = new Board();
+        board.attack(9, 'E');
         assertSame(board.attack(8, 'C').getResult(), AttackStatus.MISS);
     }
 
@@ -96,6 +97,7 @@ public class BoardTest {
     public void testHit (){
         Board board = new Board();
         board.placeShip(new Ship("MINESWEEPER"), 8, 'C', false);
+        board.attack(7, 'D');
         assertSame(board.attack(8, 'C').getResult(), AttackStatus.HIT);
 }
 
