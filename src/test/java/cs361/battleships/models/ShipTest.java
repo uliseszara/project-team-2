@@ -12,8 +12,8 @@ public class ShipTest {
     public void testShipConstructor() {
         Ship ship = new Ship("MinESwEEpeR");
         assertTrue(ship.getKind().equals("minesweeper"));
-        assertTrue(ship.getLength()==2);
-        assertTrue( ship.getNumHits()==0);
-        assertTrue(ship.getOccupiedSquares()== null);
+        assertTrue(ship.getLength() == 2);
+        assertTrue(ship.getNumHits() == 0);
+        assertTrue(ship.getOccupiedSquares() == null);
     }
 }
