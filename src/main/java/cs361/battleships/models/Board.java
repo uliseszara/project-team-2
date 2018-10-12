@@ -21,7 +21,7 @@ public class Board {
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		y = Character.toUpperCase(y);
-		//check if there less than three ships
+		//check number of ships already on board
 		if(ships.size() == 3)
 		{
 			return false;
@@ -37,30 +37,44 @@ public class Board {
 			return false;
 		}
 
+		//hold the ship arg. length
 		int shipLength = ship.getLength();
 
+		//check if the ship arg. is the same size as any of the ships already on the board
 		for(Ship ship2 : this.ships){
+			//if it is, do not place the ship
 			if(ship2.getLength() == shipLength){
 				return false;
 			}
 		}
 
+		//horizontal ship placement
 		if(!isVertical)
 		{
+			//check to make sure ship is of correct length
 			if(shipLength <= 4){
+				//identify right bound of ship
 				char rightBound = (char)(y+shipLength-1);
 				rightBound = Character.toLowerCase(rightBound);
+				//check if right bound is on board
 				if(rightBound > 'j'){
+					//if not, do not place ship
 					return false;
 				}
 
+				//check if the ship will be placed over sqaures that are already occupied
+				//loop through each ship already on board
 				for(Ship ship1 : this.ships)
 				{
+					//loop through every square that a ship occupies
 					for(Square s1 : ship1.getOccupiedSquares())
 					{
+						//loop through the square that new ship will occupy
 						for(int i = 0; i < shipLength; i++)
 						{
+							//if any of the square that new ship will occupy are already occupied
 							if(Character.toUpperCase(s1.getColumn()) == (char)(y+i) && s1.getRow() == x){
+								//do not place ship on board
 								return false;
 							}
 						}
@@ -68,26 +82,36 @@ public class Board {
 				}
 				
 			}
-			//else the length is something other than 2,3,4
+			//else the shipLength is something other than 2,3,4
 			else{
 				return false;
 			}
 
 		}
+
+		//vertical case
 		else
 		{
+			//check to make sure ship is of correct length
 			if(shipLength <= 4){
+				//identify lower bound of ship
 				int lowerBound = x+shipLength-1;
+				//check if lower bound is on board
 				if(lowerBound > 10){
 					return false;
 				}
-				
+
+				//check if the ship will be placed over sqaures that are already occupied
+				//loop through each ship already on board
 				for(Ship ship1 : this.ships)
 				{
+					//loop through every square that a ship occupies
 					for(Square s1 : ship1.getOccupiedSquares())
 					{
+						//loop through squares that new ship will occupy
 						for(int i = 0; i < shipLength; i++)
 						{
+							//do not place ship on board
 							if(Character.toUpperCase(s1.getColumn()) == y && s1.getRow() == x+i){
 								return false;
 							}
@@ -104,14 +128,9 @@ public class Board {
 
 		}
 
-		//if bounds are okay then
+		//bounds have been checked and are okay
 
-		//lastly check if the squares that will be occupied are in any of
-		// ships list of occupied squares
-
-		//all checks have passed, add this ship to ships
-
-		//add implementation for adding occupied squares to field in ship class
+		//add the squares that the new ship will occupy to the ship
 		List<Square> shipList = new ArrayList<Square>();
 
 		if(!isVertical){
@@ -126,7 +145,10 @@ public class Board {
 				shipList.add(s1);
 			}
 		}
+
+		//add the squares to the ship object
 		ship.setOccupiedSquares(shipList);
+		//add the ship to the board class
 		ships.add(ship);
 		return true;
 	}
@@ -197,9 +219,14 @@ public class Board {
 
 	public void setShips(List<Ship> ships) {
 
+
+		//check if the number of ships passed will fit on board
 		if(ships.size() <= 3) {
+			//loop through all ships except last
 			for (int i = 0; i < ships.size() - 1; i++) {
+				//loop through the next ship including the last
 				for (int j = i + 1; j < ships.size(); j++) {
+					//if any of the ships are the same size, do not set ships var to arg.
 					if (ships.get(i).getLength() == ships.get(j).getLength()) {
 						return;
 					}
@@ -207,9 +234,9 @@ public class Board {
 			}
 		}
 
+		//checks have been made, set ships var to arg.
 		this.ships = ships;
 		
-		//function to setShip variable
 	}
 
 	public List<Result> getAttacks() {
