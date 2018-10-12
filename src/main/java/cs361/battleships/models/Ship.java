@@ -39,7 +39,8 @@ public class Ship {
         else if((k.equals("battleship"))|| (k.equals("b"))){ this.length = 4; }
         else{
             System.out.print("Invalid ship argument");
-            exit(0);
+            this.kind = "";
+			this.length = 0;
         }
 
 	}
