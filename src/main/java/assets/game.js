@@ -67,8 +67,10 @@ function cellClick() {
     let col = String.fromCharCode(this.cellIndex + 65);
     console.log(col);
     if (isSetup) {
+        console.log("not again");
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
+            console.log(game);
 
             redrawGrid();
             placedShips++;
@@ -78,8 +80,11 @@ function cellClick() {
             }
         });
     } else {
+        console.log("again");
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
+            console.log("again");
             game = data;
+            console.log(game);
             redrawGrid();
         })
     }

@@ -1,7 +1,7 @@
 package cs361.battleships.models;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 public class Result
 {
@@ -14,6 +14,11 @@ public class Result
 	{
 		return this.attackStatus;
 	}
+
+	public Result() {
+		ships = new ArrayList<Ship>();
+	}
+
 	public Result(AttackStatus result, Ship ship, Square square)
 	{
 		this.ship = ship;
