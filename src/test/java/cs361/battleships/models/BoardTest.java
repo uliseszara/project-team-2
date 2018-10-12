@@ -1,10 +1,13 @@
 package cs361.battleships.models;
 
 import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
+
 
 public class BoardTest {
 
@@ -30,6 +33,18 @@ public class BoardTest {
     public void testValidPlacement() {
         Board board = new Board();
         assertTrue(board.placeShip(new Ship("BATTLESHIP"), 7, 'G', false));
+    }
+
+    @Test
+    public void testSetGetShips() {
+        Board board = new Board();
+        List<Ship> ships = new ArrayList<Ship>();
+        Ship s1 = new Ship("m");
+        Ship s2 = new Ship("d");
+        ships.add(s1);
+        ships.add(s2);
+        board.setShips(ships);
+        assertSame(ships, board.getShips());
     }
 
     @Test
