@@ -24,9 +24,9 @@ function markHits(board, elementId, surrenderText) {
         else if (attack.result === "HIT")
             className = "hit";
         else if (attack.result === "SUNK")
-            className = "hit"
+            className = "hit";
         else if (attack.result === "SURRENDER")
-            alert(surrenderText);
+            Notify(surrenderText);
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
     });
 }
@@ -67,11 +67,8 @@ function cellClick() {
     let col = String.fromCharCode(this.cellIndex + 65);
     console.log(col);
     if (isSetup) {
-        console.log("not again");
-        sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
+        sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, "You can't place that ship there", function(data) {
             game = data;
-            console.log(game);
-
             redrawGrid();
             placedShips++;
             if (placedShips == 3) {
@@ -80,21 +77,29 @@ function cellClick() {
             }
         });
     } else {
-        console.log("again");
-        sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
-            console.log("again");
+        sendXhr("POST", "/attack", {game: game, x: row, y: col}, "You can't attack the same square twice", function(data) {
             game = data;
-            console.log(game);
+            if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK") {
+                Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
+            }
             redrawGrid();
         })
     }
 }
 
-function sendXhr(method, url, data, handler) {
+function Notify(message) {
+    document.getElementById("alert-modal").classList.remove("hidden");
+    document.getElementById("alert-modal").textContent = message;
+    setTimeout(function (){
+        document.getElementById("alert-modal").classList.add("hidden");
+    }, 2500);
+}
+
+function sendXhr(method, url, data, message, handler) {
     var req = new XMLHttpRequest();
     req.addEventListener("load", function(event) {
         if (req.status != 200) {
-            alert("Cannot complete the action");
+            Notify(message);
             return;
         }
         handler(JSON.parse(req.responseText));
@@ -146,7 +151,7 @@ function initGame() {
         shipType = "BATTLESHIP";
        registerCellListener(place(4));
     });
-    sendXhr("GET", "/game", {}, function(data) {
+    sendXhr("GET", "/game", {}, "", function(data) {
         game = data;
     });
 };
