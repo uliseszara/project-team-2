@@ -89,7 +89,7 @@ function cellClick() {
 
 function Notify(message) {
     document.getElementById("alert-modal").classList.remove("hidden");
-    document.getElementById("alert-modal").textContent = message;
+    document.getElementById("alert-content").textContent = message;
     setTimeout(function (){
         document.getElementById("alert-modal").classList.add("hidden");
     }, 2500);
