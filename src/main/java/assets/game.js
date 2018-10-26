@@ -50,6 +50,7 @@ function redrawGrid() {
 var oldListener;
 function registerCellListener(f) {
     let el = document.getElementById("player");
+
     for (i=0; i<10; i++) {
         for (j=0; j<10; j++) {
             let cell = el.rows[i].cells[j];
@@ -65,6 +66,15 @@ function registerCellListener(f) {
 function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
+
+    let sweeper = document.getElementById("place_minesweeper");
+    let destroyer= document.getElementById("place_destroyer");
+    let battleship= document.getElementById("place_battleship");
+
+    let playerCont = document.getElementById('playerShips');
+    let oppCont = document.getElementById('shipGraveYard');
+    let vBox = document.getElementById('is_vertical')
+
     console.log(col);
     if (isSetup) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, "You can't place that ship there", function(data) {
@@ -72,6 +82,18 @@ function cellClick() {
             redrawGrid();
             placedShips++;
             if (placedShips == 3) {
+
+                sweeper.classList.add('hidden');
+                sweeper.disabled = true;
+                destroyer.classList.add('hidden');
+                destroyer.disabled=true;
+                battleship.classList.add('hidden');
+                battleship.disabled=true;
+
+                playerCont.classList.add('hidden');
+                vBox.classList.add('hidden');
+                oppCont.classList.remove('hidden');
+
                 isSetup = false;
                 registerCellListener((e) => {});
             }
@@ -83,6 +105,17 @@ function cellClick() {
                 Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
             }
             redrawGrid();
+          if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
+              sweeper.classList.remove('hidden');
+            }
+
+            if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "destroyer"){
+                destroyer.classList.remove('hidden');
+            }
+
+            if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "battleship"){
+                battleship.classList.remove('hidden');
+            }
         })
     }
 }
@@ -113,8 +146,11 @@ function place(size) {
     return function() {
         let row = this.parentNode.rowIndex;
         let col = this.cellIndex;
+
+
         vertical = document.getElementById("is_vertical").checked;
         let table = document.getElementById("player");
+
         for (let i=0; i<size; i++) {
             let cell;
             if(vertical) {
@@ -139,16 +175,17 @@ function place(size) {
 function initGame() {
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
+
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
-        shipType = "MINESWEEPER";
+       shipType = "MINESWEEPER";
        registerCellListener(place(2));
     });
     document.getElementById("place_destroyer").addEventListener("click", function(e) {
-        shipType = "DESTROYER";
+       shipType = "DESTROYER";
        registerCellListener(place(3));
     });
     document.getElementById("place_battleship").addEventListener("click", function(e) {
-        shipType = "BATTLESHIP";
+       shipType = "BATTLESHIP";
        registerCellListener(place(4));
     });
     sendXhr("GET", "/game", {}, "", function(data) {
