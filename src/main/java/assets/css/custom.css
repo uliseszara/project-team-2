@@ -42,10 +42,6 @@ td:hover {
     border-radius: 50%;
 }
 
-.hidden {
-    display: none;
-}
-
 .alerter {
     display: flex;
     position: absolute;
@@ -63,4 +59,8 @@ td:hover {
 .alerter p {
     margin: auto;
     text-align: center;
+}
+
+.hidden {
+    display: none;
 }
