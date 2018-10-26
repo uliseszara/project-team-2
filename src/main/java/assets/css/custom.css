@@ -29,7 +29,8 @@ td:hover {
 }
 
 .hit {
-    background-color: orange;
+    background-color: red;
+    border-radius: 50%;
 }
 
 .sink {
@@ -37,27 +38,8 @@ td:hover {
 }
 
 .miss {
-    background-color: blue;
-}
-
-.alerter {
-    display: flex;
-    position: absolute;
-    left:75px;
-    top:328px;
-    background-color: rgb(255,255,240);
-    background-color: rgba(255,255,240,0.7);
-    width:200px;
-    height: 100px;
-    text-align: center;
-    font-size: 120%;
-    font-weight: 200;
-    color: black;
-}
-
-.alerter p {
-    margin: auto;
-    text-align: center;
+    background-color: white;
+    border-radius: 50%;
 }
 
 .hidden {
