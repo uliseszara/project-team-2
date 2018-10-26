@@ -110,13 +110,17 @@ function cellClick() {
             if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK") {
                 Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
+                              sweeper.classList.remove('selected');
                               sweeper.classList.remove('hidden');
                             }
                  if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "destroyer"){
                                 destroyer.classList.remove('hidden');
+                                destroyer.classList.remove('selected');
                             }
                  if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "battleship"){
                                 battleship.classList.remove('hidden');
+                                battleship.classList.remove('selected');
+
                             }
             }
             redrawGrid();
