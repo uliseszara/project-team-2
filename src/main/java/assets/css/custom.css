@@ -74,3 +74,55 @@ td:hover {
 .hidden {
     display: none;
 }
+
+#shipCont {
+    display: block;
+    position: absolute;
+    width: 150px;
+    height: 135px;
+    border: 1px solid black;
+    left: 400px;
+    top: 400px;
+}
+
+#shipCont div {
+    margin: 3px;
+}
+#place_minesweeper {
+    width: 60px;
+    height: 30px;
+    background-color: black;
+}
+
+#place_battleship {
+    width: 120px;
+    height: 30px;
+    background-color: black;
+}
+
+#place_destroyer {
+    width: 90px;
+    height: 30px;
+    background-color: black;
+}
+
+#playerShips {
+    position: absolute;
+    left: 400px;
+    top: 380px;
+}
+
+#shipGraveYard {
+    position: absolute;
+    left: 400px;
+    top: 380px;
+}
+
+.selected{
+    border: 3px solid gold;
+}
+
+#div_vBox {
+    position: absolute;
+    bottom: 2px;
+}
