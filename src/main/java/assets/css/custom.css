@@ -1,19 +1,29 @@
 /* Add additional stylesheets below
 -------------------------------------------------- */
 
+body{
+    background-color: silver;
+}
+
 .battleGrid {
-    border: 1px solid black;
+    border: 1px solid silver;
     border-spacing: 0px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 .battleGrid tr {
-    border: 1px solid black;
+    border: 2px solid silver;
     height: 30px;
 }
 
 .battleGrid td {
-    border: 1px solid black;
+    border: 2px solid silver;
     width: 30px;
+}
+
+td {
+    background-color: #4682B4;
 }
 
 td:hover {
