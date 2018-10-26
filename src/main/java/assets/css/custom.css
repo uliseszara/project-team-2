@@ -29,7 +29,8 @@ td:hover {
 }
 
 .hit {
-    background-color: orange;
+    background-color: red;
+    border-radius: 50%;
 }
 
 .sink {
@@ -37,7 +38,12 @@ td:hover {
 }
 
 .miss {
-    background-color: blue;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.hidden {
+    display: none;
 }
 
 .alerter {
@@ -54,12 +60,7 @@ td:hover {
     font-weight: 200;
     color: black;
 }
-
 .alerter p {
     margin: auto;
     text-align: center;
-}
-
-.hidden {
-    display: none;
 }
