@@ -105,6 +105,7 @@ public class Board {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Result attack(int x, char y) {
+		/*
 		// first check to see if this attack is in bounds
 		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
 			return new Result(AttackStatus.INVALID, null, new Square(x, y));
@@ -158,7 +159,8 @@ public class Board {
 		}
 		// now that the result is complete, add it to the previous attacks and return it
 		attacks.add(thisResult);
-		return thisResult;
+		return thisResult;*/
+		return null;
 	}
 
 	public List<Ship> getShips() {
