@@ -7,6 +7,7 @@ public class Board {
 
 	private List<Result> attacks; // list of squares on this board that have been attacked
 	private List<Ship> ships; // list of ships on this board (cannot be more than 3)
+	private Square[][] squares; //2d array of squares to represent the board
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -14,6 +15,7 @@ public class Board {
 	public Board() {
 		attacks = new ArrayList<Result>();
 		ships = new ArrayList<Ship>();
+		squares = new Square[10][10];
 	}
 
 	/*
