@@ -16,6 +16,11 @@ public class Board {
 		attacks = new ArrayList<Result>();
 		ships = new ArrayList<Ship>();
 		squares = new Square[10][10];
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				squares[i][j] = new Square();
+			}
+		}
 	}
 
 	/*
@@ -23,134 +28,75 @@ public class Board {
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		y = Character.toUpperCase(y);
-		//check number of ships already on board
-		if(ships.size() == 3)
-		{
+
+		//perform bounds check
+		if(x < 1 || x > 10 || y < 'A' || y > 'J'){
 			return false;
 		}
 
-		//perform bounds check to see if x is between 1-10
-		if(x < 1 || x > 10){
-			return false;
-		}
-
-		//perform bounds check to see if y is between A-J
-		if(y < 'A' || y > 'J'){
-			return false;
-		}
-
-		//hold the ship arg. length
+		// make sure this isn't a duplicate
 		int shipLength = ship.getLength();
-
-		//check if the ship arg. is the same size as any of the ships already on the board
 		for(Ship ship2 : this.ships){
-			//if it is, do not place the ship
 			if(ship2.getLength() == shipLength){
 				return false;
 			}
 		}
 
-		//horizontal ship placement
+		// horizontal ship placement
 		if(!isVertical)
 		{
-			//check to make sure ship is of correct length
-			if(shipLength <= 4){
-				//identify right bound of ship
-				char rightBound = (char)(y+shipLength-1);
-				rightBound = Character.toUpperCase(rightBound);
-				//check if right bound is on board
-				if(rightBound > 'J'){
-					//if not, do not place ship
-					return false;
-				}
-
-				//check if the ship will be placed over sqaures that are already occupied
-				//loop through each ship already on board
-				for(Ship ship1 : this.ships)
-				{
-					//loop through every square that a ship occupies
-					for(Square s1 : ship1.getOccupiedSquares())
-					{
-						//loop through the square that new ship will occupy
-						for(int i = 0; i < shipLength; i++)
-						{
-							//if any of the square that new ship will occupy are already occupied
-							if(Character.toUpperCase(s1.getColumn()) == (char)(y+i) && s1.getRow() == x){
-								//do not place ship on board
-								return false;
-							}
-						}
-					}
-				}
-				
-			}
-			//else the shipLength is something other than 2,3,4
-			else{
+			// check if entire ship is on board
+			char rightBound = (char)(y+shipLength-1);
+			if(rightBound > 'J'){
 				return false;
 			}
 
+			//check if the ship will be placed over squares that are already occupied
+			for (int i = 0; i < shipLength; i++) {
+				if (squares[x][y+i-'A'].getOccupied())
+					return false;
+			}
 		}
 
-		//vertical case
+		// vertical ship placement
 		else
 		{
-			//check to make sure ship is of correct length
-			if(shipLength <= 4){
-				//identify lower bound of ship
-				int lowerBound = x+shipLength-1;
-				//check if lower bound is on board
-				if(lowerBound > 10){
-					return false;
-				}
-
-				//check if the ship will be placed over sqaures that are already occupied
-				//loop through each ship already on board
-				for(Ship ship1 : this.ships)
-				{
-					//loop through every square that a ship occupies
-					for(Square s1 : ship1.getOccupiedSquares())
-					{
-						//loop through squares that new ship will occupy
-						for(int i = 0; i < shipLength; i++)
-						{
-							//do not place ship on board
-							if(Character.toUpperCase(s1.getColumn()) == y && s1.getRow() == x+i){
-								return false;
-							}
-						}
-					}
-				}
-			
-			}
-			//else the length is something other than 2,3,4
-			else{
+			// check if entire ship is on board
+			int lowerBound = x + shipLength - 1;
+			if(lowerBound > 10){
 				return false;
 			}
 
-
+			//check if the ship will be placed over squares that are already occupied
+			for (int i = 0; i < shipLength; i++) {
+				if (squares[x+i][y+0-'A'].getOccupied())
+					return false;
+			}
 		}
 
-		//bounds have been checked and are okay
-
-		//add the squares that the new ship will occupy to the ship
-		List<Square> shipList = new ArrayList<Square>();
-
+		// occupy squares and set captain's quarters
 		if(!isVertical){
 			for(int i=0; i<shipLength; i++){
-				Square s1 = new Square(x, Character.toUpperCase((char)(y+i)));
-				shipList.add(s1);
+				squares[x][y+i-'A'].setOccupied(true);
+				squares[x][y+i-'A'].setShip(ship);
+				if (i == shipLength - 2) {
+					ship.setCaptainsQuartersX(x);
+					ship.setCaptainsQuartersY((char)(y+i));
+				}
 			}
 		}
 		else{
 			for(int i=0; i<shipLength; i++){
-				Square s1 = new Square(x+i, y);
-				shipList.add(s1);
+				squares[x+i][y+0-'A'].setOccupied(true);
+				squares[x+i][y+0-'A'].setShip(ship);
+				if (i == shipLength - 2) {
+					ship.setCaptainsQuartersX(x+i);
+					ship.setCaptainsQuartersY(y);
+				}
 			}
 		}
 
-		//add the squares to the ship object
-		ship.setOccupiedSquares(shipList);
-		//add the ship to the board class
+		//add the ship to the board
 		ships.add(ship);
 		return true;
 	}
@@ -159,6 +105,7 @@ public class Board {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Result attack(int x, char y) {
+		/*
 		// first check to see if this attack is in bounds
 		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
 			return new Result(AttackStatus.INVALID, null, new Square(x, y));
@@ -212,7 +159,8 @@ public class Board {
 		}
 		// now that the result is complete, add it to the previous attacks and return it
 		attacks.add(thisResult);
-		return thisResult;
+		return thisResult;*/
+		return null;
 	}
 
 	public List<Ship> getShips() {
