@@ -104,19 +104,63 @@ public class Board {
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
-	public Result attack(int x, char y) {
-		/*
+	public Result attack(int x, char y)
+	{
 		// first check to see if this attack is in bounds
-		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
+		if (x < 1 || x > 10 || y < 'A' || y > 'J')
+		{
 			return new Result(AttackStatus.INVALID, null, new Square(x, y));
 		}
-		// then check the attacks already made; no duplicate attacks allowed
-		for (Result r : attacks) {
-			// if this attack is targeted at a square already attacked it is invalid
-			if (r.getLocation().getRow() == x && r.getLocation().getColumn() == y) {
-				return new Result(AttackStatus.INVALID, null, new Square(x, y));
+		if(squares[x][y - 'A'].getOccupied() == false)
+		{
+			return new Result(AttackStatus.MISS, null, new Square(x, y));
+		}
+		else
+		{
+			boolean hitRes = squares[x][y - 'A'].getShip().hit(x,y);
+			boolean surrender = true;
+
+			if (!hitRes)
+			{
+				if (squares[x][y - 'A'].getShip().getCaptainsQuartersX() == x && squares[x][y - 'A'].getShip().getCaptainsQuartersY() == y)
+				{
+					return new Result(AttackStatus.MISS, null, new Square(x, y));
+				}
+				else
+				{
+					return new Result(AttackStatus.HIT, null, new Square(x, y));
+				}
+			}
+			else
+			{
+				if (squares[x][y - 'A'].getShip().getSunk() == true)
+				{
+					for (Ship ships : ships)
+					{
+						if (ships.getSunk() == false)
+						{
+							surrender = false;
+						}
+					}
+					if (surrender)
+					{
+						return new Result(AttackStatus.SURRENDER, null, new Square(x, y));
+					}
+					else
+					{
+						return new Result(AttackStatus.SUNK, null, new Square(x, y));
+					}
+				}
 			}
 		}
+//		// then check the attacks already made; no duplicate attacks allowed
+//		for (Result r : attacks) {
+//			// if this attack is targeted at a square already attacked it is invalid
+//			if (r.getLocation().getRow() == x && r.getLocation().getColumn() == y) {
+//				return new Result(AttackStatus.INVALID, null, new Square(x, y));
+//			}
+//		}
+		/*
 		// next check to see if the attack hits a ship. Initialize tools to help us later
 		Result thisResult;
 		Ship shipHit = null;
@@ -186,7 +230,7 @@ public class Board {
 
 		//checks have been made, set ships var to arg.
 		this.ships = ships;
-		
+
 	}
 
 	public List<Result> getAttacks() {
@@ -198,3 +242,4 @@ public class Board {
 
 	public Square[][] getSquares() { return squares; }
 }
+
