@@ -7,6 +7,9 @@ public class Board {
 
 	private List<Result> attacks; // list of squares on this board that have been attacked
 	private List<Ship> ships; // list of ships on this board (cannot be more than 3)
+
+	private List<Square> revealedSquares;//list of squares on this board that have been revealed by sonar
+	private int sonarsLeft;
 	private Square[][] squares; //2d array of squares to represent the board
 
 	/*
@@ -16,6 +19,7 @@ public class Board {
 		attacks = new ArrayList<Result>();
 		ships = new ArrayList<Ship>();
 		squares = new Square[10][10];
+		this.sonarsLeft = 2;
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				squares[i][j] = new Square();
@@ -206,7 +210,17 @@ public class Board {
 		return thisResult;*/
 		return null;
 	}
+	public Result SonarAttack(int x, char y){
+		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
+			//invalid
+		}
+		for(s : revealedSquares){
+			if(s.getRow() == x && s.getColumn() == y){
+				//invalid
+			}
+		}
 
+	}
 	public List<Ship> getShips() {
 		return this.ships;
 	}

@@ -73,6 +73,7 @@ function registerCellListener(f) {
 }
 
 function cellClick() {
+    let numSunk = 0;
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
 
@@ -109,6 +110,7 @@ function cellClick() {
             game = data;
             if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK") {
                 Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
+                numSunk++;
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
                     sweeper.classList.remove('selected');
                     sweeper.classList.remove('hidden');
@@ -120,6 +122,9 @@ function cellClick() {
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "battleship"){
                     battleship.classList.remove('hidden');
                     battleship.classList.remove('selected');
+                }
+                if(numSunk == 1){
+                //Activate sonar
                 }
             }
             redrawGrid();
