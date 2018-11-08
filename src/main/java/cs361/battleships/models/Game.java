@@ -65,7 +65,7 @@ public class Game {
 
     private int randRow() {
         Random rand = new Random();
-        int  n = rand.nextInt(10) + 1;
+        int  n = rand.nextInt(10);
         return n;
     }
 

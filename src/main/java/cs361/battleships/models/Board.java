@@ -18,7 +18,7 @@ public class Board {
 		squares = new Square[10][10];
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
-				squares[i][j] = new Square();
+				squares[i][j] = new Square(i+1,(char)(j+'A'));
 			}
 		}
 	}
@@ -30,7 +30,7 @@ public class Board {
 		y = Character.toUpperCase(y);
 
 		//perform bounds check
-		if(x < 1 || x > 10 || y < 'A' || y > 'J'){
+		if(x < 0 || x > 9 || y < 'A' || y > 'J'){
 			return false;
 		}
 
@@ -69,7 +69,7 @@ public class Board {
 
 			//check if the ship will be placed over squares that are already occupied
 			for (int i = 0; i < shipLength; i++) {
-				if (squares[x+i][y+0-'A'].getOccupied())
+				if (squares[x+i][y-'A'].getOccupied())
 					return false;
 			}
 		}
@@ -87,8 +87,8 @@ public class Board {
 		}
 		else{
 			for(int i=0; i<shipLength; i++){
-				squares[x+i][y+0-'A'].setOccupied(true);
-				squares[x+i][y+0-'A'].setShip(ship);
+				squares[x+i][y-'A'].setOccupied(true);
+				squares[x+i][y-'A'].setShip(ship);
 				if (i == shipLength - 2) {
 					ship.setCaptainsQuartersX(x+i);
 					ship.setCaptainsQuartersY(y);
@@ -107,13 +107,20 @@ public class Board {
 	public Result attack(int x, char y)
 	{
 		// first check to see if this attack is in bounds
-		if (x < 1 || x > 10 || y < 'A' || y > 'J')
+		if (x < 0 || x > 9 || y < 'A' || y > 'J')
 		{
 			return new Result(AttackStatus.INVALID, null, new Square(x, y));
 		}
+		// then to see if it's a duplicate attack (illegal)
+		for (Result attack : attacks) {
+			if (attack.getResult() == AttackStatus.HIT && x == attack.getLocation().getRow() && y == attack.getLocation().getColumn())
+				return new Result(AttackStatus.INVALID, null, new Square(x, y));
+		}
+		// now handle the attack
+		Result res;
 		if(squares[x][y - 'A'].getOccupied() == false)
 		{
-			return new Result(AttackStatus.MISS, null, new Square(x, y));
+			res = new Result(AttackStatus.MISS, null, new Square(x, y));
 		}
 		else
 		{
@@ -124,87 +131,34 @@ public class Board {
 			{
 				if (squares[x][y - 'A'].getShip().getCaptainsQuartersX() == x && squares[x][y - 'A'].getShip().getCaptainsQuartersY() == y)
 				{
-					return new Result(AttackStatus.MISS, null, new Square(x, y));
+					res = new Result(AttackStatus.MISS, null, new Square(x, y));
 				}
 				else
 				{
-					return new Result(AttackStatus.HIT, null, new Square(x, y));
+					res = new Result(AttackStatus.HIT, squares[x][y - 'A'].getShip(), new Square(x, y));
 				}
 			}
 			else
 			{
-				if (squares[x][y - 'A'].getShip().getSunk() == true)
+				for (Ship ships : ships)
 				{
-					for (Ship ships : ships)
+					if (ships.getSunk() == false)
 					{
-						if (ships.getSunk() == false)
-						{
-							surrender = false;
-						}
+						surrender = false;
 					}
-					if (surrender)
-					{
-						return new Result(AttackStatus.SURRENDER, null, new Square(x, y));
-					}
-					else
-					{
-						return new Result(AttackStatus.SUNK, null, new Square(x, y));
-					}
+				}
+				if (surrender)
+				{
+					res = new Result(AttackStatus.SURRENDER, null, new Square(x, y));
+				}
+				else
+				{
+					res = new Result(AttackStatus.SUNK, squares[x][y - 'A'].getShip(), new Square(x, y));
 				}
 			}
 		}
-//		// then check the attacks already made; no duplicate attacks allowed
-//		for (Result r : attacks) {
-//			// if this attack is targeted at a square already attacked it is invalid
-//			if (r.getLocation().getRow() == x && r.getLocation().getColumn() == y) {
-//				return new Result(AttackStatus.INVALID, null, new Square(x, y));
-//			}
-//		}
-		/*
-		// next check to see if the attack hits a ship. Initialize tools to help us later
-		Result thisResult;
-		Ship shipHit = null;
-		// now for each ship
-		for (Ship ship : ships) {
-			// look at the squares in that ship
-			for (Square square : ship.getOccupiedSquares()) {
-				// if this attack targets one of those squares it is a hit
-				if (square.getRow() == x && square.getColumn() == y) {
-					shipHit = ship;
-					ship.incNumHits();
-					break;
-				}
-			}
-		}
-		// if this was a hit
-		if (shipHit != null) {
-			// check if the game is over
-			boolean surrender = true;
-			for (Ship ship : ships) {
-				if (ship.getNumHits() < ship.getLength()) {
-					surrender = false;
-				}
-			}
-			if (surrender) {
-				thisResult = new Result(AttackStatus.SURRENDER, null, new Square(x, y));
-			}
-			// check for sunk
-			else if (shipHit.getNumHits() == shipHit.getLength()) {
-				thisResult =  new Result(AttackStatus.SUNK, shipHit, new Square(x, y));
-			}
-			// if the code is still running than it is only a hit
-			else {
-				thisResult = new Result(AttackStatus.HIT, shipHit, new Square(x, y));
-			}
-		}
-		// no ship was hit
-		else {
-			thisResult = new Result(AttackStatus.MISS, null, new Square(x, y));
-		}
-		// now that the result is complete, add it to the previous attacks and return it
-		attacks.add(thisResult);
-		return thisResult;*/
-		return null;
+		attacks.add(res);
+		return res;
 	}
 
 	public List<Ship> getShips() {
@@ -236,9 +190,10 @@ public class Board {
 	public List<Result> getAttacks() {
 		return attacks;
 	}
-
 	public void setAttacks(List<Result> attacks) {
 		this.attacks = attacks;
 	}
+
+	public Square[][] getSquares() { return squares; }
 }
 
