@@ -27,16 +27,10 @@ function markHits(board, elementId, surrenderText) {
             className = "hit";
         else if (attack.result === "SURRENDER")
            { className = "hit";
-             let sweeper = document.getElementById("place_minesweeper");
-             sweeper.classList.remove('hidden');
-             let destroyer= document.getElementById("place_destroyer");
-             destroyer.classList.remove('hidden');
-             let battleship= document.getElementById("place_battleship");
-             battleship.classList.remove('hidden');
              Notify(surrenderText);
 
             }
-        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+        document.getElementById(elementId).rows[attack.location.row].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
     });
 }
 
@@ -49,9 +43,12 @@ function redrawGrid() {
         return;
     }
 
-    game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
-        document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
-    }));
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            if(game.playersBoard.squares[i][j].occupied)
+                document.getElementById("player").rows[i].cells[j].classList.add("occupied");
+        }
+    }
     markHits(game.opponentsBoard, "opponent", "You won the game");
     markHits(game.playersBoard, "player", "You lost the game");
 }
@@ -73,7 +70,7 @@ function registerCellListener(f) {
 }
 
 function cellClick() {
-    let row = this.parentNode.rowIndex + 1;
+    let row = this.parentNode.rowIndex;
     let col = String.fromCharCode(this.cellIndex + 65);
 
     let sweeper = document.getElementById("place_minesweeper");
@@ -87,10 +84,11 @@ function cellClick() {
 
     let vBox = document.getElementById('is_vertical');
 
-    console.log(col);
+    console.log(row + " " + col);
     if (isSetup) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, "You can't place that ship there", function(data) {
             game = data;
+            console.log(game);
             redrawGrid();
             placedShips++;
             document.getElementById('place_'+ shipType.toLowerCase()).classList.add('hidden');
@@ -107,6 +105,7 @@ function cellClick() {
     } else {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, "You can't attack the same square twice", function(data) {
             game = data;
+            console.log(game);
             if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK") {
                 Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
