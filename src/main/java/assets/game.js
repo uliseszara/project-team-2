@@ -1,5 +1,7 @@
 var isSetup = true;
 var placedShips = 0;
+var sonarOn = false;
+var sonarsUsed = 0;
 var game;
 var shipType;
 var vertical;
@@ -74,12 +76,15 @@ function registerCellListener(f) {
 
 function cellClick() {
     let numSunk = 0;
+
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
 
     let sweeper = document.getElementById("place_minesweeper");
     let destroyer= document.getElementById("place_destroyer");
     let battleship= document.getElementById("place_battleship");
+
+    let sonar = document.getElementById("place_sonar");
 
     let playerCont = document.getElementById('playerShips');
     let oppCont = document.getElementById('shipGraveYard');
@@ -105,7 +110,13 @@ function cellClick() {
                 registerCellListener((e) => {});
             }
         });
-    } else {
+    }
+    else if(sonarOn && (sonarsUsed <= 2)){
+
+
+        document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+    }
+    else{
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, "You can't attack the same square twice", function(data) {
             game = data;
             if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK") {
@@ -124,7 +135,7 @@ function cellClick() {
                     battleship.classList.remove('selected');
                 }
                 if(numSunk == 1){
-                //Activate sonar
+                    sonar.classList.remove('hidden');
                 }
             }
             redrawGrid();
@@ -188,6 +199,11 @@ function initGame() {
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
 
+
+
+    document.getElementById("place_sonar").addEventListener("click",function(e){
+        sonarOn = true;
+    })
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
        shipType = "MINESWEEPER";
        document.getElementById("place_minesweeper").classList.add("selected");
