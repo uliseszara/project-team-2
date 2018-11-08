@@ -126,13 +126,12 @@ public class BoardTest {
         board.placeShip(new Minesweeper(), 3, 'C', false);
         assertSame(board.attack(8, 'E').getResult(), AttackStatus.MISS);
         assertSame(board.attack(8, 'E').getResult(), AttackStatus.SUNK);
+        assertTrue(board.getShips().get(0).getSunk());
     }
     @Test
     public void testSurrender() {
         Board board = new Board();
         board.placeShip(new Minesweeper(), 8, 'C', false);
-        board.attack(8, 'C');
-        board.attack(8, 'D');
         assertSame(board. attack(8, 'C').getResult(), AttackStatus.SURRENDER);
     }
 }

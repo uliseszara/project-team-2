@@ -18,7 +18,7 @@ public class Board {
 		squares = new Square[10][10];
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
-				squares[i][j] = new Square(i+1,(char)(j+'A'));
+				squares[i][j] = new Square(i,(char)(j+'A'));
 			}
 		}
 	}
@@ -76,6 +76,7 @@ public class Board {
 
 		// occupy squares and set captain's quarters
 		if(!isVertical){
+			ship.setVert(false);
 			for(int i=0; i<shipLength; i++){
 				squares[x][y+i-'A'].setOccupied(true);
 				squares[x][y+i-'A'].setShip(ship);
@@ -124,36 +125,59 @@ public class Board {
 		}
 		else
 		{
-			boolean hitRes = squares[x][y - 'A'].getShip().hit(x,y);
+			Ship ship = squares[x][y - 'A'].getShip();
+			boolean hitRes;
+			if (ship.getLength() == 2) {
+				Minesweeper copy = new Minesweeper();
+				copy.setCaptainsQuartersX(ship.getCaptainsQuartersX());
+				copy.setCaptainsQuartersY(ship.getCaptainsQuartersY());
+				hitRes = copy.hit(x,y);
+			}
+			else
+				hitRes = ship.hit(x,y);
+
 			boolean surrender = true;
 
 			if (!hitRes)
 			{
-				if (squares[x][y - 'A'].getShip().getCaptainsQuartersX() == x && squares[x][y - 'A'].getShip().getCaptainsQuartersY() == y)
+				if (ship.getCaptainsQuartersX() == x && ship.getCaptainsQuartersY() == y)
 				{
-					res = new Result(AttackStatus.MISS, null, new Square(x, y));
+					res = new Result(AttackStatus.MISS, ship, squares[x][y - 'A']);
 				}
 				else
 				{
-					res = new Result(AttackStatus.HIT, squares[x][y - 'A'].getShip(), new Square(x, y));
+					res = new Result(AttackStatus.HIT, ship, squares[x][y - 'A']);
 				}
 			}
 			else
 			{
-				for (Ship ships : ships)
+				for (Ship s : ships) {
+					if (s.getLength() == ship.getLength()) {
+						s.setSunk(true);
+					}
+				}
+				for (int i = 0; i < ship.getLength(); i++) {
+					if (i != 1) {
+						if (ship.getVert())
+							attack(x + 1 - i, y);
+						else
+							attack(x, (char) (y + 1 - i));
+					}
+				}
+				for (Ship s : ships)
 				{
-					if (ships.getSunk() == false)
+					if (!s.getSunk())
 					{
 						surrender = false;
 					}
 				}
 				if (surrender)
 				{
-					res = new Result(AttackStatus.SURRENDER, null, new Square(x, y));
+					res = new Result(AttackStatus.SURRENDER, ship, squares[x][y - 'A']);
 				}
 				else
 				{
-					res = new Result(AttackStatus.SUNK, squares[x][y - 'A'].getShip(), new Square(x, y));
+					res = new Result(AttackStatus.SUNK, ship, squares[x][y - 'A']);
 				}
 			}
 		}

@@ -38,6 +38,11 @@ td:hover {
     background-color: black;
 }
 
+.miss {
+    background-color: white;
+    border-radius: 50%;
+}
+
 .hit {
     background-color: red;
     border-radius: 50%;
@@ -45,11 +50,6 @@ td:hover {
 
 .sink {
     background-color: red;
-}
-
-.miss {
-    background-color: white;
-    border-radius: 50%;
 }
 
 .alerter {
