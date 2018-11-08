@@ -87,8 +87,8 @@ public class Board {
 		}
 		else{
 			for(int i=0; i<shipLength; i++){
-				squares[x+i][y+0-'A'].setOccupied(true);
-				squares[x+i][y+0-'A'].setShip(ship);
+				squares[x+i][y-'A'].setOccupied(true);
+				squares[x+i][y-'A'].setShip(ship);
 				if (i == shipLength - 2) {
 					ship.setCaptainsQuartersX(x+i);
 					ship.setCaptainsQuartersY(y);
@@ -192,8 +192,9 @@ public class Board {
 	public List<Result> getAttacks() {
 		return attacks;
 	}
-
 	public void setAttacks(List<Result> attacks) {
 		this.attacks = attacks;
 	}
+
+	public Square[][] getSquares() { return squares; }
 }
