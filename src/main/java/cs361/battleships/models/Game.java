@@ -22,10 +22,17 @@ public class Game {
             return false;
 
         boolean opponentPlacedSuccessfully;
+        Ship opponentsShip;
+        if (ship.getLength() == 2)
+            opponentsShip = new Minesweeper();
+        else if(ship.getLength() == 3)
+            opponentsShip = new Destroyer();
+        else
+            opponentsShip = new Battleship();
         do {
             // AI places random ships, so it might try and place overlapping ships
             // let it try until it gets it right
-            opponentPlacedSuccessfully = opponentsBoard.placeShip(new Ship(ship.getKind()), randRow(), randCol(), randVertical());
+            opponentPlacedSuccessfully = opponentsBoard.placeShip(opponentsShip, randRow(), randCol(), randVertical());
         } while (!opponentPlacedSuccessfully);
 
         return true;

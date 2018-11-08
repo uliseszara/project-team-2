@@ -5,10 +5,14 @@ public class Square {
 
 	private int row;
 	private char column;
+	private boolean occupied;
+	private Ship ship;
 
 	public Square(int row, char column) {
 		this.row = row;
 		this.column = column;
+		this.occupied = false;
+		this.ship = null;
 	}
 	public Square(){}
 
@@ -27,4 +31,12 @@ public class Square {
 	public void setRow(int row) {
 		this.row = row;
 	}
+
+	public boolean getOccupied() { return occupied; }
+
+	public void setOccupied(boolean x) { this.occupied = x; }
+
+	public Ship getShip() { return this.ship; }
+
+	public void setShip(Ship s1) { this.ship = s1; }
 }

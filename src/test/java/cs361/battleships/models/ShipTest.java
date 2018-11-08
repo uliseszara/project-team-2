@@ -3,35 +3,35 @@ package cs361.battleships.models;
 import org.junit.Test;
 
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 
 public class ShipTest {
 
     @Test
     public void testShipConstructor() {
-        Ship ship1 = new Ship("MinESwEEpeR");
-        assertTrue(ship1.getKind().equals("minesweeper"));
-        assertTrue(ship1.getLength()==2);
-        assertTrue(ship1.getNumHits()==0);
-        assertTrue(ship1.getOccupiedSquares()== null);
+        Ship ship = new Ship();
+        assertEquals(ship.getSunk(), false);
+    }
 
-        Ship ship2 = new Ship("DESTROYER");
-        assertTrue(ship2.getKind().equals("destroyer"));
-        assertTrue(ship2.getLength()==3);
-        assertTrue(ship2.getNumHits()==0);
-        assertTrue(ship2.getOccupiedSquares()== null);
+    @Test
+    public void testGetSetCaptainsQuarters() {
+        Ship ship = new Ship();
+        ship.setCaptainsQuartersX(2);
+        ship.setCaptainsQuartersY('C');
+        assertEquals(ship.getCaptainsQuartersX(), 2);
+        assertEquals(ship.getCaptainsQuartersY(), 'C');
+    }
 
-        Ship ship3 = new Ship("BATTLESHIP");
-        assertTrue(ship3.getKind().equals("battleship"));
-        assertTrue(ship3.getLength()==4);
-        assertTrue(ship3.getNumHits()==0);
-        assertTrue(ship3.getOccupiedSquares()== null);
-
-        Ship ship4 = new Ship("loihjdf");
-        assertTrue(ship4.getKind().equals(""));
-        assertTrue(ship4.getLength()==0);
-        assertTrue(ship4.getNumHits()==0);
-        assertTrue(ship4.getOccupiedSquares()==null);
+    @Test
+    public void testHit() {
+        Ship ship = new Destroyer();
+        ship.setCaptainsQuartersX(2);
+        ship.setCaptainsQuartersY('C');
+        assertEquals(ship.hit(2,'D'), false);
+        assertEquals(ship.getSunk(), false);
+        assertEquals(ship.hit(2,'C'), false);
+        assertEquals(ship.hit(2,'C'), true);
+        assertEquals(ship.getSunk(), true);
     }
 }
