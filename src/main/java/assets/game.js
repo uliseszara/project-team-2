@@ -1,6 +1,7 @@
 var isSetup = true;
 var placedShips = 0;
 var sonarsUsed = 0;
+var numSunk = 0;
 var game;
 var shipType;
 var vertical;
@@ -187,7 +188,11 @@ function cellClick() {
             game = data;
             if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK" || game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SURRENDER") {
                 Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
-                sonar.classList.remove('hidden');
+                numSunk++;
+                if(numSunk == 1){
+                    sonar.classList.remove('hidden');
+                }
+
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
                     sweeper.classList.remove('selected');
                     sweeper.classList.remove('hidden');
@@ -265,8 +270,6 @@ function place(size) {
 function initGame() {
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
-
-
 
     document.getElementById("place_minesweeper").addEventListener("click", _minesweeper, true);
     document.getElementById("place_destroyer").addEventListener("click", _destroyer, true);
