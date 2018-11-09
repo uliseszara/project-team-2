@@ -112,9 +112,152 @@ function cellClick() {
         });
     }
     else if(sonarOn && (sonarsUsed <= 2)){
+        /**
+        **
+        sendXhr("POST","/sonar",{game: game, x:row, y : col}, "Invalid sonar attack", function(data){
+            isSonar = false;
+            for all squares in revealed list{
+                if (occupied){
+                 .classList.add("occupied_reveal");
+                }
+                else{
+                    .classList.add("normal_reveal");
+                }
+            }
+        })
+        **
+        **/
+        let sonarRow = this.parentNode.rowIndex
+        let sonarCol = this.cellIndex
+        if((sonarRow >= 0 && sonarRow <= 9) && (sonarCol >= 0 && sonarCol <= 9)){
+            for(int i = sonarRow; i < sonarRow+3; i++){
+                for(int j = sonarCol; j < sonarCol+3; j++){
+                    if((i >= 0 && i >= 9) && (j >= 0 && j >= 9))
+                    if(game.opponentsBoard.squares[i][j].occupied){
+                        document.getElementById('opponent').rows[i].cells[j].classList.add('occupied');
+                    }
+                    else{
+                    document.getElementById('opponent').rows[i].cells[j].classList.add('revealed');
+                    }
+                }
+            }
+
+            for(int i = sonarRow; i > sonarRow-3; i--){
+                for(int j = sonarCol; j > sonarCol-3; j--){
+                    if(game.opponentsBoard.squares[i][j].occupied){
+                        document.getElementById('opponent').rows[i].cells[j].classList.add('occupied');
+                    }
+                    else{
+                        document.getElementById('opponent').rows[i].cells[j].classList.add('revealed');
+                    }
+                 }
+            }
+            if(game.opponentsBoard.squares[sonarRow+1][sonarCol+1].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow+1][sonarCol-1].occupied){
+            document.getElementById('opponent').rows[sonarRow+1].cells[sonarCol-1].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[sonarRow+1].cells[sonarCol-1].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow-1][sonarCol+1].occupied){
+            document.getElementById('opponent').rows[sonarRow-1].cells[sonarCol+1].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[sonarRow-1].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow-1][sonarCol-1].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            /*if(game.opponentsBoard.squares[sonarRow][sonarCol].occupied){
+            document.getElementById('opponent').rows[row].cells[].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+
+            if(game.opponentsBoard.squares[sonarRow+1][sonarCol].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+
+            if(game.opponentsBoard.squares[sonarRow+2][sonarCol].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+
+            if(game.opponentsBoard.squares[sonarRow-1][sonarCol].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+
+            if(game.opponentsBoard.squares[sonarRow-2][sonarCol].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+
+            if(game.opponentsBoard.squares[sonarRow][sonarCol+1].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow][sonarCol+2].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow][sonarCol-1].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow][sonarCol-2].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow+1][sonarCol+1].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow+1][sonarCol-1].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow-1][sonarCol+1].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }
+            if(game.opponentsBoard.squares[sonarRow-1][sonarCol-1].occupied){
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
+            }else{
+            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            }    */
+        }
+        row, col
+        row+1, col
+        row+2, col
+        row -1,col
+        row -2, col
+        row, col+1
+        row, col+2
+        row, col-1
+        row, col-2
+        row+1, col+1
+        row+1, col-1
+        row-1, col+1
+        row-1, col-1
 
 
-        document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
     }
     else{
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, "You can't attack the same square twice", function(data) {
