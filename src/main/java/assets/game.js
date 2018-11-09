@@ -1,8 +1,11 @@
 var isSetup = true;
 var placedShips = 0;
+var sonarsUsed = 0;
+var numSunk = 0;
 var game;
 var shipType;
 var vertical;
+var revealedSquares = [];
 
 function makeGrid(table, isPlayer) {
     for (i=0; i<10; i++) {
@@ -14,6 +17,17 @@ function makeGrid(table, isPlayer) {
         }
         table.appendChild(row);
     }
+}
+
+function markReveals() {
+    revealedSquares.forEach((square) => {
+        if(square.occupied) {
+            document.getElementById("opponent").rows[square.row].cells[square.column.charCodeAt(0)-'A'.charCodeAt(0)].classList.add('occupied');
+        }
+        else {
+            document.getElementById("opponent").rows[square.row].cells[square.column.charCodeAt(0)-'A'.charCodeAt(0)].classList.add('revealed');
+        }
+    });
 }
 
 function markHits(board, elementId, surrenderText) {
@@ -48,6 +62,7 @@ function redrawGrid() {
                 document.getElementById("player").rows[i].cells[j].classList.add("occupied");
         }
     }
+    markReveals();
     markHits(game.opponentsBoard, "opponent", "You won the game");
     markHits(game.playersBoard, "player", "You lost the game");
 }
@@ -93,12 +108,15 @@ var _battleship = function() {
 }
 
 function cellClick() {
+
     let row = this.parentNode.rowIndex;
     let col = String.fromCharCode(this.cellIndex + 65);
 
     let sweeper = document.getElementById("place_minesweeper");
     let destroyer= document.getElementById("place_destroyer");
     let battleship= document.getElementById("place_battleship");
+
+    let sonar = document.getElementById("sonarDiv");
 
     let playerCont = document.getElementById('playerShips');
     let oppCont = document.getElementById('shipGraveYard');
@@ -124,11 +142,57 @@ function cellClick() {
                 registerCellListener((e) => {});
             }
         });
-    } else {
+    }
+
+    else if((document.getElementById("sonarPulse").checked) && (sonarsUsed <= 1)){
+
+        let sonarRow = this.parentNode.rowIndex
+        let sonarCol = this.cellIndex
+
+       if((sonarRow >= 0 && sonarRow <= 9) && (sonarCol >= 0 && sonarCol <= 9)){
+            for(let i = 0; i < 3; i++){
+                for(let j = 0; j < 3; j++){
+                    if((sonarRow - 1 + i >= 0 && sonarRow - 1 + i <= 9) && (sonarCol - 1 + j >= 0 && sonarCol + j <= 9)){
+                        revealedSquares.push(game.opponentsBoard.squares[sonarRow- 1 + i][sonarCol - 1 + j]);
+                    }
+
+                }
+            }
+
+            if (sonarRow + 2 >= 0 && sonarRow + 2 <= 9 && sonarCol >= 0 && sonarCol <= 9) {
+                revealedSquares.push(game.opponentsBoard.squares[sonarRow + 2][sonarCol]);
+            }
+
+            if (sonarRow - 2 >= 0 && sonarRow - 2 <= 9 && sonarCol >= 0 && sonarCol <= 9) {
+                revealedSquares.push(game.opponentsBoard.squares[sonarRow - 2][sonarCol]);
+            }
+
+            if (sonarRow >= 0 && sonarRow <= 9 && sonarCol + 2 >= 0 && sonarCol + 2 <= 9) {
+                revealedSquares.push(game.opponentsBoard.squares[sonarRow][sonarCol + 2]);
+            }
+
+            if (sonarRow >= 0 && sonarRow <= 9 && sonarCol - 2 >= 0 && sonarCol - 2 <= 9) {
+                revealedSquares.push(game.opponentsBoard.squares[sonarRow][sonarCol - 2]);
+            }
+
+       }
+        sonarsUsed++;
+        if(sonarsUsed > 1){
+            sonar.classList.add('hidden');
+        }
+        console.log(revealedSquares);
+        redrawGrid();
+    }
+    else{
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, "You can't attack the same square twice", function(data) {
             game = data;
             if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK" || game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SURRENDER") {
                 Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
+                numSunk++;
+                if(numSunk == 1){
+                    sonar.classList.remove('hidden');
+                }
+
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
                     sweeper.classList.remove('selected');
                     sweeper.classList.remove('hidden');
@@ -144,6 +208,7 @@ function cellClick() {
                     battleship.classList.remove('selected');
                     battleship.removeEventListener("click",_battleship,true);
                 }
+
             }
             redrawGrid();
         })
@@ -209,6 +274,7 @@ function initGame() {
     document.getElementById("place_minesweeper").addEventListener("click", _minesweeper, true);
     document.getElementById("place_destroyer").addEventListener("click", _destroyer, true);
     document.getElementById("place_battleship").addEventListener("click", _battleship, true);
+
     sendXhr("GET", "/game", {}, "", function(data) {
         game = data;
     });

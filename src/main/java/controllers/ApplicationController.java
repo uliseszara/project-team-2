@@ -44,4 +44,5 @@ public class ApplicationController {
             return Results.badRequest().json();
         }
     }
+
 }
