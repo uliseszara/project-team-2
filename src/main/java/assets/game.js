@@ -149,10 +149,10 @@ function cellClick() {
         let sonarRow = this.parentNode.rowIndex
         let sonarCol = this.cellIndex
 
-       if((sonarRow >= 0 && sonarRow <= 9) && (sonarCol >= 0 && sonarCol <= 9)){
+       if((sonarRow >= 0 && sonarRow <= 9) && (sonarCol >= 0 && sonarCol <= 10)){
             for(let i = 0; i < 3; i++){
                 for(let j = 0; j < 3; j++){
-                    if((sonarRow - 1 + i >= 0 && sonarRow - 1 + i <= 9) && (sonarCol - 1 + j >= 0 && sonarCol + j <= 9)){
+                    if((sonarRow - 1 + i >= 0 && sonarRow - 1 + i <= 9) && (sonarCol - 1 + j >= 0 && sonarCol + j <= 10)){
                         revealedSquares.push(game.opponentsBoard.squares[sonarRow- 1 + i][sonarCol - 1 + j]);
                     }
 
