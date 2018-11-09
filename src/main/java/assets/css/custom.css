@@ -38,6 +38,15 @@ td:hover {
     background-color: black;
 }
 
+.revealed{
+    background-color: gray;
+}
+
+.miss {
+    background-color: white;
+    border-radius: 50%;
+}
+
 .hit {
     background-color: red;
     border-radius: 50%;
@@ -45,11 +54,6 @@ td:hover {
 
 .sink {
     background-color: red;
-}
-
-.miss {
-    background-color: white;
-    border-radius: 50%;
 }
 
 .alerter {
@@ -122,7 +126,7 @@ td:hover {
     border: 3px solid gold;
 }
 
-#div_vBox {
+#div_vBox,sonarDiv {
     position: absolute;
     bottom: 2px;
 }

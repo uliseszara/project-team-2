@@ -1,10 +1,10 @@
 var isSetup = true;
 var placedShips = 0;
-var sonarOn = false;
 var sonarsUsed = 0;
 var game;
 var shipType;
 var vertical;
+var revealedSquares = [];
 
 function makeGrid(table, isPlayer) {
     for (i=0; i<10; i++) {
@@ -18,6 +18,17 @@ function makeGrid(table, isPlayer) {
     }
 }
 
+function markReveals() {
+    revealedSquares.forEach((square) => {
+        if(square.occupied) {
+            document.getElementById("opponent").rows[square.row].cells[square.column.charCodeAt(0)-'A'.charCodeAt(0)].classList.add('occupied');
+        }
+        else {
+            document.getElementById("opponent").rows[square.row].cells[square.column.charCodeAt(0)-'A'.charCodeAt(0)].classList.add('revealed');
+        }
+    });
+}
+
 function markHits(board, elementId, surrenderText) {
     board.attacks.forEach((attack) => {
         let className;
@@ -29,16 +40,9 @@ function markHits(board, elementId, surrenderText) {
             className = "hit";
         else if (attack.result === "SURRENDER")
            { className = "hit";
-             let sweeper = document.getElementById("place_minesweeper");
-             sweeper.classList.remove('hidden');
-             let destroyer= document.getElementById("place_destroyer");
-             destroyer.classList.remove('hidden');
-             let battleship= document.getElementById("place_battleship");
-             battleship.classList.remove('hidden');
              Notify(surrenderText);
-
-            }
-        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+           }
+        document.getElementById(elementId).rows[attack.location.row].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
     });
 }
 
@@ -51,9 +55,13 @@ function redrawGrid() {
         return;
     }
 
-    game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
-        document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
-    }));
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            if(game.playersBoard.squares[i][j].occupied)
+                document.getElementById("player").rows[i].cells[j].classList.add("occupied");
+        }
+    }
+    markReveals();
     markHits(game.opponentsBoard, "opponent", "You won the game");
     markHits(game.playersBoard, "player", "You lost the game");
 }
@@ -74,17 +82,40 @@ function registerCellListener(f) {
     oldListener = f;
 }
 
-function cellClick() {
-    let numSunk = 0;
+var _minesweeper = function() {
+       shipType = "MINESWEEPER";
+       document.getElementById("place_minesweeper").classList.add("selected");
+       document.getElementById("place_destroyer").classList.remove("selected");
+       document.getElementById("place_battleship").classList.remove("selected");
+       registerCellListener(place(2));
+}
 
-    let row = this.parentNode.rowIndex + 1;
+var _destroyer = function() {
+       shipType = "DESTROYER";
+       document.getElementById("place_minesweeper").classList.remove("selected");
+       document.getElementById("place_destroyer").classList.add("selected");
+       document.getElementById("place_battleship").classList.remove("selected");
+       registerCellListener(place(3));
+}
+
+var _battleship = function() {
+       shipType = "BATTLESHIP";
+       document.getElementById("place_minesweeper").classList.remove("selected");
+       document.getElementById("place_destroyer").classList.remove("selected");
+       document.getElementById("place_battleship").classList.add("selected");
+       registerCellListener(place(4));
+}
+
+function cellClick() {
+
+    let row = this.parentNode.rowIndex;
     let col = String.fromCharCode(this.cellIndex + 65);
 
     let sweeper = document.getElementById("place_minesweeper");
     let destroyer= document.getElementById("place_destroyer");
     let battleship= document.getElementById("place_battleship");
 
-    let sonar = document.getElementById("place_sonar");
+    let sonar = document.getElementById("sonarDiv");
 
     let playerCont = document.getElementById('playerShips');
     let oppCont = document.getElementById('shipGraveYard');
@@ -93,7 +124,7 @@ function cellClick() {
 
     let vBox = document.getElementById('is_vertical');
 
-    console.log(col);
+    console.log(row + " " + col);
     if (isSetup) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, "You can't place that ship there", function(data) {
             game = data;
@@ -111,175 +142,68 @@ function cellClick() {
             }
         });
     }
-    else if(sonarOn && (sonarsUsed <= 2)){
-        /**
-        **
-        sendXhr("POST","/sonar",{game: game, x:row, y : col}, "Invalid sonar attack", function(data){
-            isSonar = false;
-            for all squares in revealed list{
-                if (occupied){
-                 .classList.add("occupied_reveal");
-                }
-                else{
-                    .classList.add("normal_reveal");
-                }
-            }
-        })
-        **
-        **/
+
+    else if((document.getElementById("sonarPulse").checked) && (sonarsUsed <= 1)){
+
         let sonarRow = this.parentNode.rowIndex
         let sonarCol = this.cellIndex
-        if((sonarRow >= 0 && sonarRow <= 9) && (sonarCol >= 0 && sonarCol <= 9)){
-            for(int i = sonarRow; i < sonarRow+3; i++){
-                for(int j = sonarCol; j < sonarCol+3; j++){
-                    if((i >= 0 && i >= 9) && (j >= 0 && j >= 9))
-                    if(game.opponentsBoard.squares[i][j].occupied){
-                        document.getElementById('opponent').rows[i].cells[j].classList.add('occupied');
+
+       if((sonarRow >= 0 && sonarRow <= 9) && (sonarCol >= 0 && sonarCol <= 9)){
+            for(let i = 0; i < 3; i++){
+                for(let j = 0; j < 3; j++){
+                    if((sonarRow - 1 + i >= 0 && sonarRow - 1 + i <= 9) && (sonarCol - 1 + j >= 0 && sonarCol + j <= 9)){
+                        revealedSquares.push(game.opponentsBoard.squares[sonarRow- 1 + i][sonarCol - 1 + j]);
                     }
-                    else{
-                    document.getElementById('opponent').rows[i].cells[j].classList.add('revealed');
-                    }
+
                 }
             }
 
-            for(int i = sonarRow; i > sonarRow-3; i--){
-                for(int j = sonarCol; j > sonarCol-3; j--){
-                    if(game.opponentsBoard.squares[i][j].occupied){
-                        document.getElementById('opponent').rows[i].cells[j].classList.add('occupied');
-                    }
-                    else{
-                        document.getElementById('opponent').rows[i].cells[j].classList.add('revealed');
-                    }
-                 }
-            }
-            if(game.opponentsBoard.squares[sonarRow+1][sonarCol+1].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow+1][sonarCol-1].occupied){
-            document.getElementById('opponent').rows[sonarRow+1].cells[sonarCol-1].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[sonarRow+1].cells[sonarCol-1].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow-1][sonarCol+1].occupied){
-            document.getElementById('opponent').rows[sonarRow-1].cells[sonarCol+1].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[sonarRow-1].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow-1][sonarCol-1].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            /*if(game.opponentsBoard.squares[sonarRow][sonarCol].occupied){
-            document.getElementById('opponent').rows[row].cells[].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            if (sonarRow + 2 >= 0 && sonarRow + 2 <= 9 && sonarCol >= 0 && sonarCol <= 9) {
+                revealedSquares.push(game.opponentsBoard.squares[sonarRow + 2][sonarCol]);
             }
 
-            if(game.opponentsBoard.squares[sonarRow+1][sonarCol].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            if (sonarRow - 2 >= 0 && sonarRow - 2 <= 9 && sonarCol >= 0 && sonarCol <= 9) {
+                revealedSquares.push(game.opponentsBoard.squares[sonarRow - 2][sonarCol]);
             }
 
-            if(game.opponentsBoard.squares[sonarRow+2][sonarCol].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            if (sonarRow >= 0 && sonarRow <= 9 && sonarCol + 2 >= 0 && sonarCol + 2 <= 9) {
+                revealedSquares.push(game.opponentsBoard.squares[sonarRow][sonarCol + 2]);
             }
 
-            if(game.opponentsBoard.squares[sonarRow-1][sonarCol].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
+            if (sonarRow >= 0 && sonarRow <= 9 && sonarCol - 2 >= 0 && sonarCol - 2 <= 9) {
+                revealedSquares.push(game.opponentsBoard.squares[sonarRow][sonarCol - 2]);
             }
 
-            if(game.opponentsBoard.squares[sonarRow-2][sonarCol].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-
-            if(game.opponentsBoard.squares[sonarRow][sonarCol+1].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow][sonarCol+2].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow][sonarCol-1].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow][sonarCol-2].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow+1][sonarCol+1].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow+1][sonarCol-1].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow-1][sonarCol+1].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }
-            if(game.opponentsBoard.squares[sonarRow-1][sonarCol-1].occupied){
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('occupied');
-            }else{
-            document.getElementById('opponent').rows[row].cells[col - 'A'.charCodeAt(0)].classList.add('revealed');
-            }    */
+       }
+        sonarsUsed++;
+        if(sonarsUsed > 1){
+            sonar.classList.add('hidden');
         }
-        row, col
-        row+1, col
-        row+2, col
-        row -1,col
-        row -2, col
-        row, col+1
-        row, col+2
-        row, col-1
-        row, col-2
-        row+1, col+1
-        row+1, col-1
-        row-1, col+1
-        row-1, col-1
-
-
+        console.log(revealedSquares);
+        redrawGrid();
     }
     else{
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, "You can't attack the same square twice", function(data) {
             game = data;
-            if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK") {
+            if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK" || game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SURRENDER") {
                 Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
-                numSunk++;
+                sonar.classList.remove('hidden');
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
                     sweeper.classList.remove('selected');
                     sweeper.classList.remove('hidden');
+                    sweeper.removeEventListener("click",_minesweeper,true);
                 }
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "destroyer"){
                     destroyer.classList.remove('hidden');
-                    desroyer.classList.remove('selected');
+                    destroyer.classList.remove('selected');
+                    destroyer.removeEventListener("click",_destroyer,true);
                 }
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "battleship"){
                     battleship.classList.remove('hidden');
                     battleship.classList.remove('selected');
+                    battleship.removeEventListener("click",_battleship,true);
                 }
-                if(numSunk == 1){
-                    sonar.classList.remove('hidden');
-                }
+
             }
             redrawGrid();
         })
@@ -344,30 +268,10 @@ function initGame() {
 
 
 
-    document.getElementById("place_sonar").addEventListener("click",function(e){
-        sonarOn = true;
-    })
-    document.getElementById("place_minesweeper").addEventListener("click", function(e) {
-       shipType = "MINESWEEPER";
-       document.getElementById("place_minesweeper").classList.add("selected");
-       document.getElementById("place_destroyer").classList.remove("selected");
-       document.getElementById("place_battleship").classList.remove("selected");
-       registerCellListener(place(2));
-    });
-    document.getElementById("place_destroyer").addEventListener("click", function(e) {
-       shipType = "DESTROYER";
-       document.getElementById("place_minesweeper").classList.remove("selected");
-       document.getElementById("place_destroyer").classList.add("selected");
-       document.getElementById("place_battleship").classList.remove("selected");
-       registerCellListener(place(3));
-    });
-    document.getElementById("place_battleship").addEventListener("click", function(e) {
-       shipType = "BATTLESHIP";
-       document.getElementById("place_minesweeper").classList.remove("selected");
-       document.getElementById("place_destroyer").classList.remove("selected");
-       document.getElementById("place_battleship").classList.add("selected");
-       registerCellListener(place(4));
-    });
+    document.getElementById("place_minesweeper").addEventListener("click", _minesweeper, true);
+    document.getElementById("place_destroyer").addEventListener("click", _destroyer, true);
+    document.getElementById("place_battleship").addEventListener("click", _battleship, true);
+
     sendXhr("GET", "/game", {}, "", function(data) {
         game = data;
     });
