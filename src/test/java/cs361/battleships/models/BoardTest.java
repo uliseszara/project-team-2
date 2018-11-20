@@ -134,4 +134,11 @@ public class BoardTest {
         board.placeShip(new Minesweeper(), 8, 'C', false);
         assertSame(board. attack(8, 'C').getResult(), AttackStatus.SURRENDER);
     }
+
+    @Test public void testSonars() {
+        Board board = new Board();
+        assertSame(board.getSonarsLeft(), 2);
+        board.decSonarsLeft(5);
+        board.setAttacks(board.getAttacks());
+    }
 }

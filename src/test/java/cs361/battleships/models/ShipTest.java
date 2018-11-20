@@ -33,5 +33,7 @@ public class ShipTest {
         assertEquals(ship.hit(2,'C'), false);
         assertEquals(ship.hit(2,'C'), true);
         assertEquals(ship.getSunk(), true);
+        assertEquals(ship.getCaptainHit(), false);
+        assertEquals(ship.getKind(), "destroyer");
     }
 }
