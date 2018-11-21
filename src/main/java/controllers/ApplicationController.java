@@ -45,4 +45,11 @@ public class ApplicationController {
         }
     }
 
+    public Result move(Context context, MoveGameAction m) {
+        Game game = m.getGame();
+        game.move(m.getDirection());
+
+        return Results.json().render(game);
+    }
+
 }

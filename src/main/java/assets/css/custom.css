@@ -86,7 +86,7 @@ td:hover {
     height: 135px;
     border: 1px solid black;
     left: 400px;
-    top: 400px;
+    top: 280px;
 }
 
 #shipCont div {
@@ -110,23 +110,38 @@ td:hover {
     background-color: black;
 }
 
-#playerShips {
+#playerShips, #shipGraveYard {
     position: absolute;
     left: 400px;
-    top: 380px;
-}
-
-#shipGraveYard {
-    position: absolute;
-    left: 400px;
-    top: 380px;
+    top: 260px;
 }
 
 .selected{
     border: 3px solid gold;
 }
 
-#div_vBox,sonarDiv {
+#div_vBox, #sonarDiv, #move_button {
     position: absolute;
     bottom: 2px;
+}
+
+#moveCont {
+    position: absolute;
+    width: 120px;
+    height: 110px;
+    border: 1px solid black;
+    left: 400px;
+    top: 500px;
+}
+
+#move_button{
+    margin-left:3px;
+    margin-bottom:1px;
+}
+
+#moveCont::before{
+    content:"Move Your Fleet";
+    position: absolute;
+    top:-20px;
+    left:0px;
 }

@@ -57,6 +57,10 @@ public class Game {
         return true;
     }
 
+    public void move(String direction) {
+        playersBoard.moveFleet(direction);
+    }
+
     private char randCol() {
         Random r = new Random();
         char c = (char)(r.nextInt(10) + 'A');

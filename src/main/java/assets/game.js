@@ -6,6 +6,7 @@ var game;
 var shipType;
 var vertical;
 var revealedSquares = [];
+var movesUsed=0;
 
 function makeGrid(table, isPlayer) {
     for (i=0; i<10; i++) {
@@ -192,6 +193,9 @@ function cellClick() {
                 if(numSunk == 1){
                     sonar.classList.remove('hidden');
                 }
+                else if (numSunk == 2) {
+                    document.getElementById("moveCont").classList.remove("hidden");
+                }
 
                 if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
                     sweeper.classList.remove('selected');
@@ -211,8 +215,26 @@ function cellClick() {
 
             }
             redrawGrid();
-        })
+        });
     }
+}
+
+function moveShips() {
+    movesUsed++;
+    if(movesUsed >= 2)
+        document.getElementById("moveCont").classList.add("hidden");
+
+    var dir;
+
+    if (document.getElementById("move_up").checked) dir = "up";
+    else if (document.getElementById("move_right").checked) dir = "right";
+    else if (document.getElementById("move_down").checked) dir = "down";
+    else  dir = "left";
+
+    sendXhr("POST", "/move", {game: game, direction: dir}, "Something went wrong", function(data) {
+        game = data;
+        redrawGrid();
+    });
 }
 
 function Notify(message) {
@@ -274,6 +296,8 @@ function initGame() {
     document.getElementById("place_minesweeper").addEventListener("click", _minesweeper, true);
     document.getElementById("place_destroyer").addEventListener("click", _destroyer, true);
     document.getElementById("place_battleship").addEventListener("click", _battleship, true);
+
+    document.getElementById("move_button").addEventListener("click", moveShips, true)
 
     sendXhr("GET", "/game", {}, "", function(data) {
         game = data;

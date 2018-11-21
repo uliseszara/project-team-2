@@ -188,6 +188,10 @@ public class Board {
 		return res;
 	}
 
+	public void moveFleet(String direction) {
+		System.out.println("Succesfully called moveFleet with direction " + direction);
+	}
+
 
 	public List<Ship> getShips() {
 		return this.ships;
