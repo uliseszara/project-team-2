@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Ship {
 	@JsonProperty protected boolean sunk;
-	protected int captainsQuartersX;
-	protected char captainsQuartersY;
-	protected boolean captainHit;
-	protected int length;
-	protected String kind;
-	protected boolean vert;
+	@JsonProperty protected int captainsQuartersX;
+	@JsonProperty protected char captainsQuartersY;
+	@JsonProperty protected boolean captainHit;
+	@JsonProperty protected int length;
+	@JsonProperty protected String kind;
+	@JsonProperty protected boolean vert;
 
 	public int getCaptainsQuartersX() { return captainsQuartersX; }
 	public void setCaptainsQuartersX(int captainsQuartersX) { this.captainsQuartersX = captainsQuartersX; }
