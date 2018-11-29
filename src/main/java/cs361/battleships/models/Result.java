@@ -1,14 +1,14 @@
 package cs361.battleships.models;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Result
 {
-	private List<Ship> ships;
-	private Ship ship;
-	private Square square;
-	private AttackStatus attackStatus;
+	@JsonProperty private List<Ship> ships;
+	@JsonProperty private Ship ship;
+	@JsonProperty private Square square;
+	@JsonProperty private AttackStatus attackStatus;
 
 	public AttackStatus getResult()
 	{

@@ -1,15 +1,16 @@
 package cs361.battleships.models;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
 
-	private List<Result> attacks; // list of squares on this board that have been attacked
-	private List<Ship> ships; // list of ships on this board (cannot be more than 3)
+	@JsonProperty private List<Result> attacks; // list of squares on this board that have been attacked
+	@JsonProperty private List<Ship> ships; // list of ships on this board (cannot be more than 3)
 
-	private int sonarsLeft;
-	private Square[][] squares; //2d array of squares to represent the board
+	@JsonProperty private int sonarsLeft;
+	@JsonProperty private Square[][] squares; //2d array of squares to represent the board
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -82,7 +83,7 @@ public class Board {
 			ship.setVert(false);
 			for(int i=0; i<shipLength; i++){
 				squares[x][y+i-'A'].setOccupied(true);
-				squares[x][y+i-'A'].setShip(ship);
+				squares[x][y+i-'A'].addShip(ship);
 				if (i == shipLength - 2) {
 					ship.setCaptainsQuartersX(x);
 					ship.setCaptainsQuartersY((char)(y+i));
@@ -92,7 +93,7 @@ public class Board {
 		else{
 			for(int i=0; i<shipLength; i++){
 				squares[x+i][y-'A'].setOccupied(true);
-				squares[x+i][y-'A'].setShip(ship);
+				squares[x+i][y-'A'].addShip(ship);
 				if (i == shipLength - 2) {
 					ship.setCaptainsQuartersX(x+i);
 					ship.setCaptainsQuartersY(y);
@@ -128,7 +129,7 @@ public class Board {
 		}
 		else
 		{
-			Ship ship = squares[x][y - 'A'].getShip();
+			Ship ship = squares[x][y - 'A'].getShips().get(0);
 			boolean hitRes;
 			if (ship.getLength() == 2) {
 				Minesweeper copy = new Minesweeper();

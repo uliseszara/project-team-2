@@ -34,9 +34,9 @@ public class BoardTest {
         Board board = new Board();
         assertTrue(board.placeShip(new Minesweeper(), 4, 'D', false));
         assertTrue(board.getSquares()[4]['D'-'A'].getOccupied());
-        assertSame(board.getSquares()[4]['D'-'A'].getShip(), board.getShips().get(0));
+        assertSame(board.getSquares()[4]['D'-'A'].getShips().get(0), board.getShips().get(0));
         assertTrue(board.getSquares()[4]['E'-'A'].getOccupied());
-        assertSame(board.getSquares()[4]['E'-'A'].getShip(), board.getShips().get(0));
+        assertSame(board.getSquares()[4]['E'-'A'].getShips().get(0), board.getShips().get(0));
     }
 
     @Test
@@ -44,9 +44,9 @@ public class BoardTest {
         Board board = new Board();
         assertTrue(board.placeShip(new Minesweeper(), 4, 'D', true));
         assertTrue(board.getSquares()[4]['D'-'A'].getOccupied());
-        assertSame(board.getSquares()[4]['D'-'A'].getShip(), board.getShips().get(0));
+        assertSame(board.getSquares()[4]['D'-'A'].getShips().get(0), board.getShips().get(0));
         assertTrue(board.getSquares()[5]['D'-'A'].getOccupied());
-        assertSame(board.getSquares()[5]['D'-'A'].getShip(), board.getShips().get(0));
+        assertSame(board.getSquares()[5]['D'-'A'].getShips().get(0), board.getShips().get(0));
     }
 
     @Test
