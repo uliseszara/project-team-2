@@ -32,7 +32,8 @@ public class BoardTest {
     @Test
     public void testValidPlacementHorizontal() {
         Board board = new Board();
-        assertTrue(board.placeShip(new Minesweeper(), 4, 'D', false));
+        assertTrue(board.placeShip(new Battleship(), 4, 'D', false));
+        assertTrue(board.placeShip(new Submarine(), 6, 'D', false));
         assertTrue(board.getSquares()[4]['D'-'A'].getOccupied());
         assertSame(board.getSquares()[4]['D'-'A'].getShips().get(0), board.getShips().get(0));
         assertTrue(board.getSquares()[4]['E'-'A'].getOccupied());
@@ -135,10 +136,20 @@ public class BoardTest {
         assertSame(board. attack(8, 'C').getResult(), AttackStatus.SURRENDER);
     }
 
-    @Test public void testSonars() {
+    @Test
+    public void testMoveFleet() {
         Board board = new Board();
-        assertSame(board.getSonarsLeft(), 2);
-        board.decSonarsLeft(5);
-        board.setAttacks(board.getAttacks());
+        board.placeShip(new Minesweeper(), 0, 'D', false);
+        board.placeShip(new Destroyer(), 5, 'A', true);
+        board.placeShip(new Battleship(), 4, 'J', true);
+        board.placeShip(new Submarine(), 9, 'D', false);
+        board.moveFleet("up");
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 4);
+        board.moveFleet("right");
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'B');
+        board.moveFleet("down");
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 5);
+        board.moveFleet("left");
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'A');
     }
 }

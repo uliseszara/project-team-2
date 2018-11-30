@@ -1,4 +1,5 @@
 package cs361.battleships.models;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,7 +11,6 @@ public class Board {
 	@JsonProperty private List<Result> attacks; // list of squares on this board that have been attacked
 	@JsonProperty private List<Ship> ships; // list of ships on this board (cannot be more than 3)
 
-	@JsonProperty private int sonarsLeft;
 	@JsonProperty private Square[][] squares; //2d array of squares to represent the board
 
 	/*
@@ -20,7 +20,6 @@ public class Board {
 		attacks = new ArrayList<Result>();
 		ships = new ArrayList<Ship>();
 		squares = new Square[10][10];
-		this.sonarsLeft = 2;
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				squares[i][j] = new Square(i,(char)(j+'A'));
@@ -83,8 +82,8 @@ public class Board {
 		if(!isVertical){
 			ship.setVert(false);
 			for(int i=0; i<shipLength; i++){
-				squares[x][y+i-'A'].setOccupied(true);
 				squares[x][y+i-'A'].addShip(ship);
+				ship.addSquare(new Square(squares[x][y+i-'A'].getRow(), squares[x][y+i-'A'].getColumn()));
 				if (i == shipLength - 2) {
 					ship.setCaptainsQuartersX(x);
 					ship.setCaptainsQuartersY((char)(y+i));
@@ -93,8 +92,8 @@ public class Board {
 		}
 		else{
 			for(int i=0; i<shipLength; i++){
-				squares[x+i][y-'A'].setOccupied(true);
 				squares[x+i][y-'A'].addShip(ship);
+				ship.addSquare(new Square(squares[x+i][y-'A'].getRow(), squares[x+i][y-'A'].getColumn()));
 				if (i == shipLength - 2) {
 					ship.setCaptainsQuartersX(x+i);
 					ship.setCaptainsQuartersY(y);
@@ -131,15 +130,7 @@ public class Board {
 		else
 		{
 			Ship ship = squares[x][y - 'A'].getShips().get(0);
-			boolean hitRes;
-			if (ship.getLength() == 2) {
-				Minesweeper copy = new Minesweeper();
-				copy.setCaptainsQuartersX(ship.getCaptainsQuartersX());
-				copy.setCaptainsQuartersY(ship.getCaptainsQuartersY());
-				hitRes = copy.hit(x,y);
-			}
-			else
-				hitRes = ship.hit(x,y);
+			boolean hitRes = ship.hit(x,y);
 
 			boolean surrender = true;
 
@@ -191,7 +182,117 @@ public class Board {
 	}
 
 	public void moveFleet(String direction) {
-		System.out.println("Succesfully called moveFleet with direction " + direction);
+		System.out.println("Successfully called moveFleet with direction " + direction);
+
+		List<Ship> cantMove = new ArrayList<>();
+
+		for (Ship ship : ships) {
+			if (ship.getSunk()) {
+				cantMove.add(ship);
+			}
+		}
+
+		int rowModifier = 0;
+		int colModifier = 0;
+		if (direction.equals("up")) {
+			for (int i = 0; i < 10; i++) {
+				if (squares[0][i].getOccupied()) {
+					for (Ship ship : squares[0][i].getShips()) {
+						boolean dupe = false;
+						for (Ship ship2 : cantMove) {
+							if (ship.isEqual(ship2))
+								dupe = true;
+						}
+						if (!dupe)
+							cantMove.add(ship);
+					}
+				}
+			}
+			rowModifier = 1;
+		}
+		else if (direction.equals("right")) {
+			for (int i = 0; i < 10; i++) {
+				if (squares[i][9].getOccupied()) {
+					for (Ship ship : squares[i][9].getShips()) {
+						boolean dupe = false;
+						for (Ship ship2 : cantMove) {
+							if (ship.isEqual(ship2))
+								dupe = true;
+						}
+						if (!dupe)
+							cantMove.add(ship);
+					}
+				}
+			}
+			colModifier = -1;
+		}
+		else if (direction.equals("down")) {
+			for (int i = 0; i < 10; i++) {
+				if (squares[9][i].getOccupied()) {
+					for (Ship ship : squares[9][i].getShips()) {
+						boolean dupe = false;
+						for (Ship ship2 : cantMove) {
+							if (ship.isEqual(ship2))
+								dupe = true;
+						}
+						if (!dupe)
+							cantMove.add(ship);
+					}
+				}
+			}
+			rowModifier = -1;
+		}
+		else {
+			for (int i = 0; i < 10; i++) {
+				if (squares[i][0].getOccupied()) {
+					for (Ship ship : squares[i][0].getShips()) {
+						boolean dupe = false;
+						for (Ship ship2 : cantMove) {
+							if (ship.isEqual(ship2))
+								dupe = true;
+						}
+						if (!dupe)
+							cantMove.add(ship);
+					}
+				}
+			}
+			colModifier = 1;
+		}
+
+		System.out.println(cantMove);
+
+		for (int i = 0; i < cantMove.size(); i++) {
+			for (Square square : cantMove.get(i).getOccupiedSquares()) {
+				if (squares[square.getRow() + rowModifier][square.getColumn()-'A'+colModifier].getOccupied()) {
+					for (Ship ship : squares[square.getRow() + rowModifier][square.getColumn() - 'A'+ colModifier].getShips()) {
+						boolean dupe = false;
+						for (Ship ship2 : cantMove) {
+							if (ship.isEqual(ship2))
+								dupe = true;
+						}
+						if (!dupe)
+							cantMove.add(ship);
+					}
+				}
+			}
+		}
+		for (Ship ship : ships) {
+			boolean canMove = true;
+			for (Ship ship2 : cantMove) {
+				if (ship.isEqual(ship2)) {
+					canMove = false;
+				}
+			}
+			if (canMove) {
+				for (int i = 0; i < ship.getOccupiedSquares().size(); i++) {
+					squares[ship.getOccupiedSquares().get(i).getRow()][ship.getOccupiedSquares().get(i).getColumn()-'A'].removeShip(ship);
+					ship.getOccupiedSquares().get(i).setRow(ship.getOccupiedSquares().get(i).getRow() - rowModifier);
+					ship.getOccupiedSquares().get(i).setColumn((char)(ship.getOccupiedSquares().get(i).getColumn() - colModifier));
+					squares[ship.getOccupiedSquares().get(i).getRow()][ship.getOccupiedSquares().get(i).getColumn()-'A'].addShip(ship);
+
+				}
+			}
+		}
 	}
 
 
@@ -220,10 +321,6 @@ public class Board {
 		this.ships = ships;
 
 	}
-
-	public int getSonarsLeft(){ return sonarsLeft; }
-
-	public void decSonarsLeft(int num){ this.sonarsLeft--; }
 
 	public List<Result> getAttacks() {
 		return attacks;
