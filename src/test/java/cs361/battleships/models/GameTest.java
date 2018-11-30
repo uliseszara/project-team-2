@@ -23,4 +23,11 @@ public class GameTest
         assertFalse(game.attack(-5,'A'));
         assertTrue(game.attack(1,'A'));
     }
+
+    @Test
+    public void testBattleshipandSubmarine() {
+        Game game = new Game();
+        assertTrue(game.placeShip(new Submarine(), 4, 'D', false));
+        assertTrue(game.placeShip(new Battleship(), 6, 'D', false));
+    }
 }

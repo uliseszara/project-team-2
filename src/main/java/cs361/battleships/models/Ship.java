@@ -3,6 +3,9 @@ package cs361.battleships.models;
 import java.util.List;
 import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, property="@class")
 
 public class Ship {
 	@JsonProperty protected boolean sunk;
@@ -12,6 +15,7 @@ public class Ship {
 	@JsonProperty protected int length;
 	@JsonProperty protected String kind;
 	@JsonProperty protected boolean vert;
+	@JsonProperty protected boolean submerged;
 
 	public int getCaptainsQuartersX() { return captainsQuartersX; }
 	public void setCaptainsQuartersX(int captainsQuartersX) { this.captainsQuartersX = captainsQuartersX; }
@@ -35,6 +39,7 @@ public class Ship {
 		captainHit = false;
 		sunk = false;
 		vert = true;
+		submerged = false;
 	}
 
 	public boolean hit(int x, char y) {
@@ -45,4 +50,8 @@ public class Ship {
 		}
 		return false;
 	}
+
+	public void setSubmerged(boolean x) { submerged = x; }
+
+	public boolean getSubmerged() { return submerged; }
 }

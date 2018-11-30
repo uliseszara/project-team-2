@@ -7,6 +7,7 @@ var shipType;
 var vertical;
 var revealedSquares = [];
 var movesUsed=0;
+var submerged;
 
 function makeGrid(table, isPlayer) {
     for (i=0; i<10; i++) {
@@ -89,6 +90,10 @@ var _minesweeper = function() {
        document.getElementById("place_minesweeper").classList.add("selected");
        document.getElementById("place_destroyer").classList.remove("selected");
        document.getElementById("place_battleship").classList.remove("selected");
+       document.getElementById("place_submarine").classList.remove("selected");
+       document.getElementById("submergedDiv").classList.add("hidden");
+       document.getElementById("submergedCheck").checked = false;
+
        registerCellListener(place(2));
 }
 
@@ -97,6 +102,9 @@ var _destroyer = function() {
        document.getElementById("place_minesweeper").classList.remove("selected");
        document.getElementById("place_destroyer").classList.add("selected");
        document.getElementById("place_battleship").classList.remove("selected");
+       document.getElementById("place_submarine").classList.remove("selected");
+       document.getElementById("submergedDiv").classList.add("hidden");
+       document.getElementById("submergedCheck").checked = false;
        registerCellListener(place(3));
 }
 
@@ -105,7 +113,20 @@ var _battleship = function() {
        document.getElementById("place_minesweeper").classList.remove("selected");
        document.getElementById("place_destroyer").classList.remove("selected");
        document.getElementById("place_battleship").classList.add("selected");
+       document.getElementById("place_submarine").classList.remove("selected");
+       document.getElementById("submergedDiv").classList.add("hidden");
+       document.getElementById("submergedCheck").checked = false;
        registerCellListener(place(4));
+}
+
+var _submarine = function() {
+       shipType = "SUBMARINE";
+       document.getElementById("place_minesweeper").classList.remove("selected");
+       document.getElementById("place_destroyer").classList.remove("selected");
+       document.getElementById("place_battleship").classList.remove("selected");
+       document.getElementById("place_submarine").classList.add("selected");
+       document.getElementById("submergedDiv").classList.remove("hidden");
+       registerCellListener(place(5));
 }
 
 function cellClick() {
@@ -116,6 +137,8 @@ function cellClick() {
     let sweeper = document.getElementById("place_minesweeper");
     let destroyer= document.getElementById("place_destroyer");
     let battleship= document.getElementById("place_battleship");
+    let submarine= document.getElementById("place_submarine");
+
 
     let sonar = document.getElementById("sonarDiv");
 
@@ -126,19 +149,25 @@ function cellClick() {
 
     let vBox = document.getElementById('is_vertical');
 
+    let submergedBox = document.getElementById('submergedCheck');
+    let submergedDiv = document.getElementById('submergedDiv');
     console.log(row + " " + col);
     if (isSetup) {
-        sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, "You can't place that ship there", function(data) {
+        sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical, isSubmerged:submerged}, "You can't place that ship there", function(data) {
             game = data;
             redrawGrid();
             placedShips++;
             document.getElementById('place_'+ shipType.toLowerCase()).classList.add('hidden');
-            if (placedShips == 3) {
+            if (shipType == "SUBMARINE") {
+                document.getElementById("submergedDiv").classList.add("hidden");
+                document.getElementById("submergedCheck").checked = false;
+            }
+            if (placedShips == 4) {
                 playerCont.classList.add('hidden');
                 vBox.classList.add('hidden');
                 divVBox.classList.add('hidden');
                 oppCont.classList.remove('hidden');
-
+                submergedDiv.classList.add('hidden');
                 isSetup = false;
                 registerCellListener((e) => {});
             }
@@ -212,6 +241,11 @@ function cellClick() {
                     battleship.classList.remove('selected');
                     battleship.removeEventListener("click",_battleship,true);
                 }
+                if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "submarine"){
+                    submarine.classList.remove('hidden');
+                    submarine.classList.remove('selected');
+                    submarine.removeEventListener("click",_submarine,true);
+                }
 
             }
             redrawGrid();
@@ -264,11 +298,26 @@ function place(size) {
         let row = this.parentNode.rowIndex;
         let col = this.cellIndex;
 
-
         vertical = document.getElementById("is_vertical").checked;
+        submerged = document.getElementById("submergedCheck").checked;
         let table = document.getElementById("player");
+        if(size == 5){
+            let cell;
+            if (vertical) {
+                if (row+2 < 10 && col+1 < 10)
+                    table.rows[row+2].cells[col+1].classList.toggle("placed");
+            }
+            else {
+                if (row-1 >= 0 && col+2 < 10)
+                    table.rows[row-1].cells[col+2].classList.toggle("placed");
+            }
+        }
 
-        for (let i=0; i<size; i++) {
+        let tempSize;
+        if (size == 5) tempSize = 4;
+        else tempSize = size;
+
+        for (let i=0; i<tempSize; i++) {
             let cell;
             if(vertical) {
                 let tableRow = table.rows[row+i];
@@ -296,6 +345,7 @@ function initGame() {
     document.getElementById("place_minesweeper").addEventListener("click", _minesweeper, true);
     document.getElementById("place_destroyer").addEventListener("click", _destroyer, true);
     document.getElementById("place_battleship").addEventListener("click", _battleship, true);
+    document.getElementById("place_submarine").addEventListener("click", _submarine, true);
 
     document.getElementById("move_button").addEventListener("click", moveShips, true)
 

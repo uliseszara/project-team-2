@@ -32,7 +32,8 @@ public class BoardTest {
     @Test
     public void testValidPlacementHorizontal() {
         Board board = new Board();
-        assertTrue(board.placeShip(new Minesweeper(), 4, 'D', false));
+        assertTrue(board.placeShip(new Battleship(), 4, 'D', false));
+        assertTrue(board.placeShip(new Submarine(), 6, 'D', false));
         assertTrue(board.getSquares()[4]['D'-'A'].getOccupied());
         assertSame(board.getSquares()[4]['D'-'A'].getShips().get(0), board.getShips().get(0));
         assertTrue(board.getSquares()[4]['E'-'A'].getOccupied());
