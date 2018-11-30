@@ -27,8 +27,10 @@ public class Game {
             opponentsShip = new Minesweeper();
         else if(ship.getLength() == 3)
             opponentsShip = new Destroyer();
-        else
+        else if (ship.getLength() == 4)
             opponentsShip = new Battleship();
+        else
+            opponentsShip = new Submarine();
         do {
             // AI places random ships, so it might try and place overlapping ships
             // let it try until it gets it right

@@ -83,10 +83,10 @@ td:hover {
     display: block;
     position: absolute;
     width: 150px;
-    height: 135px;
+    height: 220px;
     border: 1px solid black;
     left: 400px;
-    top: 280px;
+    top: 270px;
 }
 
 #shipCont div {
@@ -110,10 +110,30 @@ td:hover {
     background-color: black;
 }
 
+#vertSquare {
+    width: 30px;
+    height: 30px;
+    background-color: black;
+    position: relative;
+    left: 60px;
+    top:3px;
+    padding-bottom:0;
+    margin-bottom:0;
+    border-bottom:0;
+}
+
+
+#horizontalSquare {
+    width: 120px;
+    height: 30px;
+    background-color: black;
+
+}
+
 #playerShips, #shipGraveYard {
     position: absolute;
     left: 400px;
-    top: 260px;
+    top: 250px;
 }
 
 .selected{
@@ -131,7 +151,7 @@ td:hover {
     height: 110px;
     border: 1px solid black;
     left: 400px;
-    top: 500px;
+    top: 510px;
 }
 
 #move_button{
@@ -145,3 +165,4 @@ td:hover {
     top:-20px;
     left:0px;
 }
+

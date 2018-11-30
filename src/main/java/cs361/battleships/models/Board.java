@@ -130,15 +130,7 @@ public class Board {
 		else
 		{
 			Ship ship = squares[x][y - 'A'].getShips().get(0);
-			boolean hitRes;
-			if (ship.getLength() == 2) {
-				Minesweeper copy = new Minesweeper();
-				copy.setCaptainsQuartersX(ship.getCaptainsQuartersX());
-				copy.setCaptainsQuartersY(ship.getCaptainsQuartersY());
-				hitRes = copy.hit(x,y);
-			}
-			else
-				hitRes = ship.hit(x,y);
+			boolean hitRes = ship.hit(x,y);
 
 			boolean surrender = true;
 

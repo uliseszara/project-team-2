@@ -25,8 +25,14 @@ public class ApplicationController {
             ship = new Minesweeper();
         else if (g.getShipType().equalsIgnoreCase("destroyer"))
             ship = new Destroyer();
-        else
+        else if (g.getShipType().equalsIgnoreCase("battleship"))
             ship = new Battleship();
+        else {
+            ship = new Submarine();
+            ship.setSubmerged(g.isSubmerged());
+        }
+
+
         boolean result = game.placeShip(ship, g.getActionRow(), g.getActionColumn(), g.isVertical());
         if (result) {
             return Results.json().render(game);
