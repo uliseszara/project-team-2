@@ -1,4 +1,5 @@
 package cs361.battleships.models;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +7,6 @@ import java.util.List;
 public class Result
 {
 	@JsonProperty private List<Ship> ships;
-	@JsonProperty private Ship ship;
 	@JsonProperty private Square square;
 	@JsonProperty private AttackStatus attackStatus;
 
@@ -19,9 +19,9 @@ public class Result
 		ships = new ArrayList<Ship>();
 	}
 
-	public Result(AttackStatus result, Ship ship, Square square)
+	public Result(AttackStatus result, List<Ship> ships, Square square)
 	{
-		this.ship = ship;
+		this.ships = ships;
 		this.square = square;
 		this.attackStatus = result;
 	}
@@ -29,13 +29,11 @@ public class Result
 		this.attackStatus = result;
 	}
 
-	public Ship getShip() {
-		return this.ship;
+	public List<Ship> getShips() {
+		return this.ships;
 	}
-
-	public void setShip(Ship ship) {
-		this.ship = ship;
-	}
+	public void setShip(List<Ship> ships) { this.ships = ships; }
+	public void addShip(Ship ship) { ships.add(ship); }
 
 	public Square getLocation() {
 		return this.square;

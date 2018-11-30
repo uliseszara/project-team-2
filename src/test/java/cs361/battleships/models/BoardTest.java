@@ -4,6 +4,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
@@ -128,6 +129,20 @@ public class BoardTest {
         assertSame(board.attack(8, 'E').getResult(), AttackStatus.MISS);
         assertSame(board.attack(8, 'E').getResult(), AttackStatus.SUNK);
         assertTrue(board.getShips().get(0).getSunk());
+    }
+    @Test
+    public void testSpaceLaser() {
+        Board board = new Board();
+        board.placeShip(new Battleship(), 8, 'C', false);
+        Submarine s1 = new Submarine();
+        s1.setSubmerged(true);
+        assertEquals(s1.getSubmerged(), true);
+        board.placeShip(s1, 3, 'C', false);
+        assertSame(board.attack(8, 'E').getResult(), AttackStatus.MISS);
+        assertSame(board.attack(8, 'E').getResult(), AttackStatus.SUNK);
+        assertTrue(board.getShips().get(0).getSunk());
+        assertSame(board.attack(3, 'C').getResult(), AttackStatus.HIT);
+
     }
     @Test
     public void testSurrender() {

@@ -1,0 +1,51 @@
+<#import "../layout/defaultLayout.ftl.html" as layout> 
+<@layout.myLayout "Home page">    
+
+
+<h1>The Battleship game</h1>
+
+<table id="opponent" class="battleGrid">
+</table>
+
+<table id="player" class="battleGrid">
+</table>
+
+
+<div id="playerShips"> Place Your Ships
+</div>
+<div id="shipGraveYard" class="hidden"> Sunken Enemy Ships
+</div>
+
+<div id="shipCont">
+    <div id="place_minesweeper"></div>
+    <div id="place_destroyer"></div>
+    <div id="place_battleship"></div>
+    <div id="place_submarine">
+        <div id="vertSquare"></div>
+        <div id="horizontalSquare"></div>
+    </div>
+    <div id="submergedDiv" class="hidden"><input type="checkbox" id="submergedCheck">Submerge</div>
+    <div id="sonarDiv" class="hidden"><input type="checkbox" id="sonarPulse">Sonar Pulse</div>
+    <div id ="div_vBox"><input type="checkbox" id="is_vertical">Vertical</div>
+</div>
+
+<div id="moveCont" class="hidden">
+    <form>
+        <input type="radio" name="move_dir" id="move_up" checked> North</input></br>
+        <input type="radio" name="move_dir" id="move_right"> East</input></br>
+        <input type="radio" name="move_dir" id="move_down"> South</input></br>
+        <input type="radio" name="move_dir" id="move_left"> West</input>
+    </form>
+    <button id="move_button">Move</button>
+</div>
+
+<div id="alert-modal" class = "hidden alerter">
+    <p id="alert-content">Test</p>
+</div>
+
+<script type="text/javascript" src="/assets/game.js"></script>
+<script>
+    initGame();
+</script>
+
+</@layout.myLayout>

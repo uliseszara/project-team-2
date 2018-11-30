@@ -1,0 +1,168 @@
+/* Add additional stylesheets below
+-------------------------------------------------- */
+
+body{
+    background-color: silver;
+}
+
+.battleGrid {
+    border: 1px solid silver;
+    border-spacing: 0px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.battleGrid tr {
+    border: 2px solid silver;
+    height: 30px;
+}
+
+.battleGrid td {
+    border: 2px solid silver;
+    width: 30px;
+}
+
+td {
+    background-color: #4682B4;
+}
+
+td:hover {
+    background-color: gray;
+}
+
+.placed {
+    background-color: gray;
+}
+
+.occupied {
+    background-color: black;
+}
+
+.revealed{
+    background-color: gray;
+}
+
+.miss {
+    background-color: white;
+    border-radius: 50%;
+}
+
+.hit {
+    background-color: red;
+    border-radius: 50%;
+}
+
+.sink {
+    background-color: red;
+}
+
+.alerter {
+    display: flex;
+    position: absolute;
+    left:75px;
+    top:328px;
+    background-color: rgb(255,255,240);
+    background-color: rgba(255,255,240,0.7);
+    width:200px;
+    height: 100px;
+    text-align: center;
+    font-size: 120%;
+    font-weight: 200;
+    color: black;
+}
+.alerter p {
+    margin: auto;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+#shipCont {
+    display: block;
+    position: absolute;
+    width: 150px;
+    height: 220px;
+    border: 1px solid black;
+    left: 400px;
+    top: 270px;
+}
+
+#shipCont div {
+    margin: 3px;
+}
+#place_minesweeper {
+    width: 60px;
+    height: 30px;
+    background-color: black;
+}
+
+#place_battleship {
+    width: 120px;
+    height: 30px;
+    background-color: black;
+}
+
+#place_destroyer {
+    width: 90px;
+    height: 30px;
+    background-color: black;
+}
+
+#vertSquare {
+    width: 30px;
+    height: 30px;
+    background-color: black;
+    position: relative;
+    left: 60px;
+    top:3px;
+    padding-bottom:0;
+    margin-bottom:0;
+    border-bottom:0;
+}
+
+
+#horizontalSquare {
+    width: 120px;
+    height: 30px;
+    background-color: black;
+
+}
+
+#playerShips, #shipGraveYard {
+    position: absolute;
+    left: 400px;
+    top: 250px;
+}
+
+.selected{
+    border: 3px solid gold;
+}
+
+#div_vBox, #sonarDiv, #move_button {
+    position: absolute;
+    bottom: 2px;
+}
+
+#moveCont {
+    position: absolute;
+    width: 120px;
+    height: 110px;
+    border: 1px solid black;
+    left: 400px;
+    top: 510px;
+}
+
+#move_button{
+    margin-left:3px;
+    margin-bottom:1px;
+}
+
+#moveCont::before{
+    content:"Move Your Fleet";
+    position: absolute;
+    top:-20px;
+    left:0px;
+}
+
