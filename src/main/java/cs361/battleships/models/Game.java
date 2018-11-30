@@ -29,8 +29,11 @@ public class Game {
             opponentsShip = new Destroyer();
         else if (ship.getLength() == 4)
             opponentsShip = new Battleship();
-        else
+        else {
+            //create random bool and pass it in
             opponentsShip = new Submarine();
+            opponentsShip.setSubmerged(randVertical());
+        }
         do {
             // AI places random ships, so it might try and place overlapping ships
             // let it try until it gets it right

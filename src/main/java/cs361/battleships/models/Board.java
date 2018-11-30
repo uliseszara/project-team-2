@@ -47,58 +47,152 @@ public class Board {
 		}
 
 		// horizontal ship placement
-		if(!isVertical)
-		{
-			// check if entire ship is on board
-			char rightBound = (char)(y+shipLength-1);
-			if(rightBound > 'J'){
-				return false;
-			}
+        if(!isVertical)
+        {
+            if(shipLength == 5){
+                char rightBound = (char) (y + shipLength - 2);
+                if (rightBound > 'J') {
+                    return false;
+                }
+                if(x-1 < 0){
+                    return false;
+                }
+                //check if the ship will be placed over squares that are already occupied
+                for (int i = 0; i < shipLength-1; i++) {
+                    if (squares[x][y+i-'A'].getOccupied()){
+                        //return false;
+                        if(squares[x][y+i-'A'].getShips().get(0).getSubmerged() == ship.getSubmerged()){
+                            return false;
+                        }
+                    }
+                }
+                if(squares[x-1][y+2-'A'].getOccupied()) {
+                    if (squares[x - 1][y + 2 - 'A'].getShips().get(0).getSubmerged() == ship.getSubmerged()) {
+                        return false;
+                    }
+                }
+            }
+            else {
+                // check if entire ship is on board
+                char rightBound = (char) (y + shipLength - 1);
+                if (rightBound > 'J') {
+                    return false;
+                }
 
-			//check if the ship will be placed over squares that are already occupied
-			for (int i = 0; i < shipLength; i++) {
-				if (squares[x][y+i-'A'].getOccupied())
-					return false;
-			}
-		}
+                //check if the ship will be placed over squares that are already occupied
+                for (int i = 0; i < shipLength; i++) {
+                    if (squares[x][y+i-'A'].getOccupied()){
+                        //return false;
+                        if(squares[x][y+i-'A'].getShips().get(0).getSubmerged() == ship.getSubmerged()){
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
 
 		// vertical ship placement
-		else
-		{
-			// check if entire ship is on board
-			int lowerBound = x + shipLength - 1;
-			if(lowerBound > 10){
-				return false;
-			}
+        else
+        {
+            if(shipLength == 5){
+                // check if entire ship is on board
+                int lowerBound = x + shipLength - 2;
+                if (lowerBound > 10) {
+                    return false;
+                }
+                char rightBound = (char)(y+1);
+                if(rightBound > 'J'){
+                    return false;
+                }
+                //check if the ship will be placed over squares that are already occupied
+                for (int i = 0; i < shipLength-1; i++) {
+                    if (squares[x + i][y - 'A'].getOccupied()) {
+                        //return false;
+                        if (squares[x + i][y - 'A'].getShips().get(0).getSubmerged() == ship.getSubmerged()) {
+                            return false;
+                        }
+                    }
+                }
+                if(squares[x + 2][(y + 1) - 'A'].getOccupied()) {
+                    if (squares[x + 2][(y + 1) - 'A'].getShips().get(0).getSubmerged() == ship.getSubmerged()) {
+                        return false;
+                    }
+                }
+            }
+            else {
+                // check if entire ship is on board
+                int lowerBound = x + shipLength - 1;
+                if (lowerBound > 10) {
+                    return false;
+                }
 
-			//check if the ship will be placed over squares that are already occupied
-			for (int i = 0; i < shipLength; i++) {
-				if (squares[x+i][y-'A'].getOccupied())
-					return false;
-			}
-		}
+                //check if the ship will be placed over squares that are already occupied
+                for (int i = 0; i < shipLength; i++) {
+                    if (squares[x + i][y - 'A'].getOccupied()) {
+                        //return false;
+                        if (squares[x + i][y - 'A'].getShips().get(0).getSubmerged() == ship.getSubmerged()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
 
 		// occupy squares and set captain's quarters
 		if(!isVertical){
 			ship.setVert(false);
-			for(int i=0; i<shipLength; i++){
-				squares[x][y+i-'A'].addShip(ship);
-				ship.addSquare(new Square(squares[x][y+i-'A'].getRow(), squares[x][y+i-'A'].getColumn()));
-				if (i == shipLength - 2) {
-					ship.setCaptainsQuartersX(x);
-					ship.setCaptainsQuartersY((char)(y+i));
-				}
-			}
+			if(shipLength == 5){
+                for(int i=0; i<shipLength; i++){
+                    if(i != 4) {
+						squares[x][y + i - 'A'].addShip(ship);
+						ship.addSquare(new Square(squares[x][y + i - 'A'].getRow(), squares[x][y + i - 'A'].getColumn()));
+					}
+                    if (i == shipLength - 2) {
+                        ship.setCaptainsQuartersX(x);
+                        ship.setCaptainsQuartersY((char)(y+i));
+                    }
+                }
+                //add the side one
+                squares[x-1][y + 2 - 'A'].addShip(ship);
+                ship.addSquare(new Square(squares[x-1][y + 2 - 'A'].getRow(), squares[x-1][y + 2 - 'A'].getColumn()));
+            }
+            else {
+                for (int i = 0; i < shipLength; i++) {
+                    squares[x][y + i - 'A'].addShip(ship);
+                    ship.addSquare(new Square(squares[x][y + i - 'A'].getRow(), squares[x][y + i - 'A'].getColumn()));
+                    if (i == shipLength - 2) {
+                        ship.setCaptainsQuartersX(x);
+                        ship.setCaptainsQuartersY((char) (y + i));
+                    }
+                }
+            }
 		}
 		else{
-			for(int i=0; i<shipLength; i++){
-				squares[x+i][y-'A'].addShip(ship);
-				ship.addSquare(new Square(squares[x+i][y-'A'].getRow(), squares[x+i][y-'A'].getColumn()));
-				if (i == shipLength - 2) {
-					ship.setCaptainsQuartersX(x+i);
-					ship.setCaptainsQuartersY(y);
-				}
-			}
+		    if(shipLength == 5){
+                for(int i=0; i<shipLength; i++){
+                    if(i != 4) {
+                        squares[x + i][y - 'A'].addShip(ship);
+                        ship.addSquare(new Square(squares[x + i][y - 'A'].getRow(), squares[x + i][y - 'A'].getColumn()));
+                    }
+                    if (i == shipLength - 2) {
+                        ship.setCaptainsQuartersX(x+i);
+                        ship.setCaptainsQuartersY(y);
+                    }
+                }
+                //add the side one
+                squares[x + 2][(y+1) - 'A'].addShip(ship);
+                ship.addSquare(new Square(squares[x + 2][(y+1) - 'A'].getRow(), squares[x + 2][(y+1) - 'A'].getColumn()));
+            }
+            else {
+                for (int i = 0; i < shipLength; i++) {
+                    squares[x + i][y - 'A'].addShip(ship);
+                    ship.addSquare(new Square(squares[x + i][y - 'A'].getRow(), squares[x + i][y - 'A'].getColumn()));
+                    if (i == shipLength - 2) {
+                        ship.setCaptainsQuartersX(x + i);
+                        ship.setCaptainsQuartersY(y);
+                    }
+                }
+            }
 		}
 
 		//add the ship to the board
@@ -152,14 +246,35 @@ public class Board {
 						s.setSunk(true);
 					}
 				}
-				for (int i = 0; i < ship.getLength(); i++) {
-					if (i != 1) {
-						if (ship.getVert())
-							attack(x + 1 - i, y);
-						else
-							attack(x, (char) (y + 1 - i));
+				if(ship.getLength() == 5){
+					for (int i = 0; i < ship.getLength()-1; i++) {
+
+						if (i != 0)
+						{
+							if (ship.getVert())
+								attack(x - i, y);
+							else
+								attack(x, (char) (y - i));
+						}
+					}
+					//extra side one
+					if (ship.getVert())
+						attack(x -1, (char) (y+1));
+					else
+						attack(x-1, (char) (y -1));
+				}
+				else {
+					for (int i = 0; i < ship.getLength(); i++) {
+						if (i != 1) {
+							if (ship.getVert())
+								attack(x + 1 - i, y);
+							else
+								attack(x, (char) (y + 1 - i));
+						}
 					}
 				}
+
+
 				for (Ship s : ships)
 				{
 					if (!s.getSunk())
