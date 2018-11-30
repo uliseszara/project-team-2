@@ -210,7 +210,6 @@ function cellClick() {
         if(sonarsUsed > 1){
             sonar.classList.add('hidden');
         }
-        console.log(revealedSquares);
         redrawGrid();
     }
     else{
@@ -267,6 +266,7 @@ function moveShips() {
 
     sendXhr("POST", "/move", {game: game, direction: dir}, "Something went wrong", function(data) {
         game = data;
+        console.log(game);
         redrawGrid();
     });
 }

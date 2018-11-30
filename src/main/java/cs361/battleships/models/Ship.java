@@ -2,9 +2,9 @@ package cs361.battleships.models;
 
 import java.util.List;
 import java.util.ArrayList;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, property="@class")
 
 public class Ship {
@@ -16,6 +16,7 @@ public class Ship {
 	@JsonProperty protected String kind;
 	@JsonProperty protected boolean vert;
 	@JsonProperty protected boolean submerged;
+	protected List<Square> occupiedSquares = new ArrayList<>();
 
 	public int getCaptainsQuartersX() { return captainsQuartersX; }
 	public void setCaptainsQuartersX(int captainsQuartersX) { this.captainsQuartersX = captainsQuartersX; }
@@ -54,4 +55,13 @@ public class Ship {
 	public void setSubmerged(boolean x) { submerged = x; }
 
 	public boolean getSubmerged() { return submerged; }
+
+	public List<Square> getOccupiedSquares() { return occupiedSquares; }
+	public void setOccupiedSquares(List<Square> s) { occupiedSquares = s; }
+	public void addSquare(Square square) { occupiedSquares.add(square); }
+
+	public boolean isEqual(Ship ship) {
+		return (sunk == ship.sunk && captainsQuartersX == ship.captainsQuartersX && captainsQuartersY == ship.captainsQuartersY
+			&& captainHit == ship.captainHit && length == ship.length && kind.equals(ship.kind) && vert == ship.vert && submerged == ship.submerged);
+	}
 }
