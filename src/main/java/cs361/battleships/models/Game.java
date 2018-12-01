@@ -2,11 +2,7 @@ package cs361.battleships.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-
-import static cs361.battleships.models.AttackStatus.*;
 
 public class Game {
 
@@ -29,8 +25,11 @@ public class Game {
             opponentsShip = new Destroyer();
         else if (ship.getLength() == 4)
             opponentsShip = new Battleship();
-        else
+        else {
+            //create random bool and pass it in
             opponentsShip = new Submarine();
+            opponentsShip.setSubmerged(randVertical());
+        }
         do {
             // AI places random ships, so it might try and place overlapping ships
             // let it try until it gets it right

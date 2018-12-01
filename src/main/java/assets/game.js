@@ -1,6 +1,7 @@
 var isSetup = true;
 var placedShips = 0;
 var sonarsUsed = 0;
+var movesUsed = 0;
 var numSunk = 0;
 var game;
 var shipType;
@@ -216,35 +217,58 @@ function cellClick() {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, "You can't attack the same square twice", function(data) {
             game = data;
             if (game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SUNK" || game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].result == "SURRENDER") {
-                Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
-                numSunk++;
-                if(numSunk == 1){
+                //Notify("You sunk the opponent's " + game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind);
+                let sunkShips = [];
+                console.log(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ships);
+                game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ships.forEach((ship)=>{
+                    console.log("here");
+                    if (ship.sunk) sunkShips.push(ship);
+                });
+                console.log(sunkShips);
+
+                console.log(numSunk);
+                numSunk += sunkShips.length;
+                console.log(numSunk);
+
+                if(numSunk >= 1 && sonarsUsed < 2){
                     sonar.classList.remove('hidden');
                 }
-                else if (numSunk == 2) {
+                if (numSunk >= 2 && movesUsed < 2) {
                     document.getElementById("moveCont").classList.remove("hidden");
                 }
 
-                if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "minesweeper"){
-                    sweeper.classList.remove('selected');
-                    sweeper.classList.remove('hidden');
-                    sweeper.removeEventListener("click",_minesweeper,true);
+                let message = "You sunk the opponent's ";
+                sunkShips.forEach((ship)=>{
+                    message += ship.kind + " ";
+                });
+                Notify(message);
+
+                if(numSunk == 1){
+                    Notify("You unlocked the Space Lazer");
                 }
-                if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "destroyer"){
-                    destroyer.classList.remove('hidden');
-                    destroyer.classList.remove('selected');
-                    destroyer.removeEventListener("click",_destroyer,true);
-                }
-                if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "battleship"){
-                    battleship.classList.remove('hidden');
-                    battleship.classList.remove('selected');
-                    battleship.removeEventListener("click",_battleship,true);
-                }
-                if(game.opponentsBoard.attacks[game.opponentsBoard.attacks.length - 1].ship.kind == "submarine"){
-                    submarine.classList.remove('hidden');
-                    submarine.classList.remove('selected');
-                    submarine.removeEventListener("click",_submarine,true);
-                }
+
+                sunkShips.forEach((ship)=>{
+                    if(ship.kind == "minesweeper"){
+                        sweeper.classList.remove('selected');
+                        sweeper.classList.remove('hidden');
+                        sweeper.removeEventListener("click",_minesweeper,true);
+                    }
+                    if(ship.kind == "destroyer"){
+                        destroyer.classList.remove('hidden');
+                        destroyer.classList.remove('selected');
+                        destroyer.removeEventListener("click",_destroyer,true);
+                    }
+                    if(ship.kind == "battleship"){
+                        battleship.classList.remove('hidden');
+                        battleship.classList.remove('selected');
+                        battleship.removeEventListener("click",_battleship,true);
+                    }
+                    if(ship.kind == "submarine"){
+                        submarine.classList.remove('hidden');
+                        submarine.classList.remove('selected');
+                        submarine.removeEventListener("click",_submarine,true);
+                    }
+                });
 
             }
             redrawGrid();
@@ -266,7 +290,7 @@ function moveShips() {
 
     sendXhr("POST", "/move", {game: game, direction: dir}, "Something went wrong", function(data) {
         game = data;
-        console.log(game);
+        movesUsed++;
         redrawGrid();
     });
 }
