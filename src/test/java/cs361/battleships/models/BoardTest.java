@@ -4,6 +4,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
@@ -76,11 +77,15 @@ public class BoardTest {
         board.placeShip(new Destroyer(),1,'B',true);
         assertFalse(board.placeShip(new Destroyer(), 9, 'A', false));
     }
+
     @Test
-    public void testDuplicateAttack () {
+    public void testPlacementSubmerged() {
         Board board = new Board();
-        board.attack(8, 'C');
-        assertSame(board.attack(8, 'C').getResult(), AttackStatus.MISS);
+        Ship sub = new Submarine();
+        sub.setSubmerged(true);
+        Ship mine = new Minesweeper();
+        assertTrue(board.placeShip(mine, 1, 'A', true));
+        assertTrue(board.placeShip(sub, 1, 'A', true));
     }
 
     @Test
@@ -105,14 +110,6 @@ public class BoardTest {
     }
 
     @Test
-    public void testInvalidDoubleHit (){
-        Board board = new Board();
-        board.placeShip(new Minesweeper(), 8, 'C', false);
-        assertSame(board.attack(8, 'D').getResult(), AttackStatus.HIT);
-        assertSame(board.attack(8,'D').getResult(), AttackStatus.INVALID);
-    }
-
-    @Test
     public void testSunkMinesweeper() {
         Board board = new Board();
         board.placeShip(new Minesweeper(), 8, 'C', false);
@@ -123,11 +120,26 @@ public class BoardTest {
     @Test
     public void testSunkBattleship() {
         Board board = new Board();
-        board.placeShip(new Battleship(), 8, 'C', false);
+        Ship battle = new Battleship();
+        board.placeShip(battle, 8, 'C', false);
         board.placeShip(new Minesweeper(), 3, 'C', false);
+        assertSame(board.attack(8, 'E').getResult(), AttackStatus.MISS);
+        assertSame(board.attack(8, 'E').getShips().get(0), battle);
+        assertTrue(board.getShips().get(0).getSunk());
+    }
+    @Test
+    public void testSpaceLaser() {
+        Board board = new Board();
+        board.placeShip(new Battleship(), 8, 'C', false);
+        Submarine s1 = new Submarine();
+        s1.setSubmerged(true);
+        assertEquals(s1.getSubmerged(), true);
+        board.placeShip(s1, 3, 'C', false);
         assertSame(board.attack(8, 'E').getResult(), AttackStatus.MISS);
         assertSame(board.attack(8, 'E').getResult(), AttackStatus.SUNK);
         assertTrue(board.getShips().get(0).getSunk());
+        assertSame(board.attack(3, 'C').getResult(), AttackStatus.HIT);
+
     }
     @Test
     public void testSurrender() {

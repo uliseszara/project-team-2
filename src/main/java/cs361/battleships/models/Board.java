@@ -1,5 +1,4 @@
 package cs361.battleships.models;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -210,11 +209,6 @@ public class Board {
 		{
 			return new Result(AttackStatus.INVALID, null, new Square(x, y));
 		}
-		// then to see if it's a duplicate attack (illegal)
-		for (Result attack : attacks) {
-			if (attack.getResult() == AttackStatus.HIT && x == attack.getLocation().getRow() && y == attack.getLocation().getColumn())
-				return new Result(AttackStatus.INVALID, null, new Square(x, y));
-		}
 		// now handle the attack
 		Result res;
 		if(squares[x][y - 'A'].getOccupied() == false)
@@ -223,72 +217,75 @@ public class Board {
 		}
 		else
 		{
-			Ship ship = squares[x][y - 'A'].getShips().get(0);
-			boolean hitRes = ship.hit(x,y);
-
-			boolean surrender = true;
-
-			if (!hitRes)
-			{
-				if (ship.getCaptainsQuartersX() == x && ship.getCaptainsQuartersY() == y)
-				{
-					res = new Result(AttackStatus.MISS, ship, squares[x][y - 'A']);
-				}
-				else
-				{
-					res = new Result(AttackStatus.HIT, ship, squares[x][y - 'A']);
-				}
+			boolean noneSunk = true;
+			for (Ship s : ships) {
+				if (s.getSunk() == true)
+					noneSunk = false;
 			}
-			else
-			{
-				for (Ship s : ships) {
-					if (s.getLength() == ship.getLength()) {
-						s.setSunk(true);
-					}
-				}
-				if(ship.getLength() == 5){
-					for (int i = 0; i < ship.getLength()-1; i++) {
+			res = new Result(AttackStatus.MISS, new ArrayList<Ship>(), squares[x][y-'A']);
+			for (Ship ship : squares[x][y - 'A'].getShips()) {
+				if (!ship.getSubmerged() || !noneSunk) {
+					boolean hitRes = ship.hit(x, y);
 
-						if (i != 0)
-						{
-							if (ship.getVert())
-								attack(x - i, y);
-							else
-								attack(x, (char) (y - i));
+					boolean surrender = true;
+
+					if (!hitRes) {
+						if (ship.getCaptainsQuartersX() == x && ship.getCaptainsQuartersY() == y) {
+							res.addShip(ship);
+						} else {
+							res.addShip(ship);
+							if (res.getResult().equals(AttackStatus.MISS)){
+								res.setResult(AttackStatus.HIT);
+							}
 						}
-					}
-					//extra side one
-					if (ship.getVert())
-						attack(x -1, (char) (y+1));
-					else
-						attack(x-1, (char) (y -1));
-				}
-				else {
-					for (int i = 0; i < ship.getLength(); i++) {
-						if (i != 1) {
-							if (ship.getVert())
-								attack(x + 1 - i, y);
-							else
-								attack(x, (char) (y + 1 - i));
+					} else {
+						for (Ship s : ships) {
+							if (s.getLength() == ship.getLength()) {
+								s.setSunk(true);
+							}
 						}
-					}
-				}
+						if (ship.getLength() == 5) {
+							for (int i = 0; i < ship.getLength() - 1; i++) {
+								if (i != 0) {
+									if (ship.getVert())
+										attack(x - i, y);
+									else
+										attack(x, (char)(y-i));
+								}
+							}
+							// extra side one
+							if (ship.getVert())
+								attack(x-1,(char)(y+1));
+							else
+								attack(x-1,(char)(y-1));
+						}
+						else {
+							for (int i = 0; i < ship.getLength(); i++) {
+								if (i != 1) {
+									if (ship.getVert())
+										attack(x+1-i,y);
+									else
+										attack(x,(char)(y+1-i));
+								}
+							}
+						}
+						for (Ship s : ships) {
+							if (!s.getSunk()) {
+								surrender = false;
+							}
+						}
+						if (surrender) {
+							res.addShip(ship);
+							if (res.getResult().equals(AttackStatus.HIT) || res.getResult().equals(AttackStatus.MISS) || res.getResult().equals(AttackStatus.SUNK)){
+								res.setResult(AttackStatus.SURRENDER);
+							}
+						} else {
+							res.addShip(ship);
+							if (res.getResult().equals(AttackStatus.HIT) || res.getResult().equals(AttackStatus.MISS)){
+								res.setResult(AttackStatus.SUNK);
+							}						}
 
-
-				for (Ship s : ships)
-				{
-					if (!s.getSunk())
-					{
-						surrender = false;
 					}
-				}
-				if (surrender)
-				{
-					res = new Result(AttackStatus.SURRENDER, ship, squares[x][y - 'A']);
-				}
-				else
-				{
-					res = new Result(AttackStatus.SUNK, ship, squares[x][y - 'A']);
 				}
 			}
 		}
